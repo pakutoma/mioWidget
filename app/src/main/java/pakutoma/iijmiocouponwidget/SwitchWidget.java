@@ -30,7 +30,7 @@ public class SwitchWidget extends AppWidgetProvider {
         super.onReceive(context, intent);
         if (intent.getAction().equals(ACTION_GET_TRAFFIC)) {
            if (ACTION_GET_TRAFFIC.equals(intent.getAction())) {
-                    Intent serviceIntent = new Intent(context, UpdateTraffic.class);
+                    Intent serviceIntent = new Intent(context, GetTraffic.class);
                     context.startService(serviceIntent);
            }
             setAlarm(context);
@@ -74,6 +74,9 @@ public class SwitchWidget extends AppWidgetProvider {
             remoteViews.setTextViewText(R.id.data_traffic, widgetText);
             isCouponEnable = intent.getBooleanExtra("COUPON",true);
             remoteViews.setTextViewText(R.id.coupon_switch, isCouponEnable ? "ON" : "OFF");
+            ComponentName thisWidget = new ComponentName(this, SwitchWidget.class);
+            AppWidgetManager manager = AppWidgetManager.getInstance(this);
+            manager.updateAppWidget(thisWidget, remoteViews);
 
             return START_STICKY;
         }
@@ -91,10 +94,12 @@ public class SwitchWidget extends AppWidgetProvider {
             Toast.makeText(this,"Coupon変更完了",Toast.LENGTH_SHORT).show();
             if(intent.getBooleanExtra("CHANGE",false)) {
                 isCouponEnable = !isCouponEnable;
-                Toast.makeText(this,isCouponEnable.toString(),Toast.LENGTH_SHORT).show();
             }
             RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.switch_widget);
             remoteViews.setTextViewText(R.id.coupon_switch, isCouponEnable ? "ON" : "OFF");
+            ComponentName thisWidget = new ComponentName(this, SwitchWidget.class);
+            AppWidgetManager manager = AppWidgetManager.getInstance(this);
+            manager.updateAppWidget(thisWidget, remoteViews);
             return START_STICKY;
         }
 
