@@ -4,7 +4,11 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.util.Log;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -44,17 +48,25 @@ public class GetTraffic extends IntentService {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        String regex = "\"volume\": (\\d+)";
-        Pattern p = Pattern.compile(regex,Pattern.MULTILINE);
-        Matcher m = p.matcher(sb.toString());
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode node = null;
+        try {
+            node = mapper.readTree(sb.toString());
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         int traffic = 0;
-        while (m.find()){
-            traffic += Integer.parseInt(m.group(1));
+        if (node != null && node.get("returnCode").asText().equals("OK")) {
+            for (JsonNode item : node.get("couponInfo").get(0).get("coupon")) {
+                traffic += item.get("volume").asInt();
+            }
+            for (JsonNode item : node.get("couponInfo").get(0).get("hdoInfo")) {
+                traffic += item.get("coupon").get(0).get("volume").asInt();
+            }
         }
         Intent callbackIntent = new Intent(ACTION_CALLBACK_GET_TRAFFIC);
         callbackIntent.putExtra("TRAFFIC",traffic);
-        Log.d("GetTraffic", String.valueOf(traffic));
-        Log.d("GetTraffic", String.valueOf(callbackIntent.getAction()));
         callbackIntent.setPackage("pakutoma.iijmiocouponwidget");
         startService(callbackIntent);
     }

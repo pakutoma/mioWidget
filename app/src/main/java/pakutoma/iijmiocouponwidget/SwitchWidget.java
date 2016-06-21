@@ -64,25 +64,24 @@ public class SwitchWidget extends AppWidgetProvider {
     public static class UpdateTraffic extends Service {
         @Override
         public int onStartCommand(Intent intent, int flags,int startId) {
-            if (ACTION_CALLBACK_GET_TRAFFIC.equals(intent.getAction())) {
-                Toast.makeText(this, "Traffic取得完了", Toast.LENGTH_SHORT).show();
-                CharSequence widgetText;
-                int traffic = intent.getIntExtra("TRAFFIC",0);
-                if (traffic < 1000) {
-                    widgetText = String.format(Locale.US,"%dMB",traffic);
-                } else if (traffic < 10000) {
-                    widgetText = String.format(Locale.US,"%1$.2fGB",traffic / 1000.0);
-                } else {
-                    widgetText = String.format(Locale.US,"%1$.1fGB",traffic / 1000.0);
-                }
-
-                RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.switch_widget);
-                remoteViews.setTextViewText(R.id.data_traffic, widgetText);
-
-                ComponentName thisWidget = new ComponentName(this, SwitchWidget.class);
-                AppWidgetManager manager = AppWidgetManager.getInstance(this);
-                manager.updateAppWidget(thisWidget, remoteViews);
+            Toast.makeText(this, "Traffic取得完了", Toast.LENGTH_SHORT).show();
+            CharSequence widgetText;
+            int traffic = intent.getIntExtra("TRAFFIC",0);
+            if (traffic < 1000) {
+                widgetText = String.format(Locale.US,"%dMB",traffic);
+            } else if (traffic < 10000) {
+                widgetText = String.format(Locale.US,"%1$.2fGB",traffic / 1000.0);
+            } else {
+                widgetText = String.format(Locale.US,"%1$.1fGB",traffic / 1000.0);
             }
+
+            RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.switch_widget);
+            remoteViews.setTextViewText(R.id.data_traffic, widgetText);
+
+            ComponentName thisWidget = new ComponentName(this, SwitchWidget.class);
+            AppWidgetManager manager = AppWidgetManager.getInstance(this);
+            manager.updateAppWidget(thisWidget, remoteViews);
+
             return START_STICKY;
         }
 
@@ -98,12 +97,12 @@ public class SwitchWidget extends AppWidgetProvider {
     public static class SwitchCoupon extends Service {
         @Override
         public int onStartCommand(Intent intent, int flags, int startId) {
-            Toast.makeText(this, "SwitchCoupon開始", Toast.LENGTH_SHORT).show();
             ComponentName thisWidget = new ComponentName(this, SwitchWidget.class);
             AppWidgetManager manager = AppWidgetManager.getInstance(this);
 
             RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.switch_widget);
             if (ACTION_SWITCH_COUPON.equals(intent.getAction())) {
+                remoteViews.setTextViewText(R.id.coupon_switch, "wait");
                 Toast.makeText(this, "ボタンが押された", Toast.LENGTH_SHORT).show();
             }
 
