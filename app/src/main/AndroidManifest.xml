@@ -29,6 +29,16 @@
                 <action android:name="pakutoma.iijmiocouponwidget.SwitchWidget.ACTION_SWITCH_COUPON" />
             </intent-filter>
         </service>
+        <service android:enabled="true" android:exported="false" android:name=".SwitchWidget$ChangeSwitch">
+            <intent-filter>
+                <action android:name="pakutoma.iijmiocouponwidget.SwitchWidget.ACTION_CALLBACK_CHANGE_COUPON" />
+            </intent-filter>
+        </service>
+        <service android:enabled="true" android:exported="false" android:name=".ChangeCoupon">
+            <intent-filter>
+                <action android:name="pakutoma.iijmiocouponwidget.SwitchWidget.ACTION_CHANGE_COUPON" />
+            </intent-filter>
+        </service>
         <service android:enabled="true" android:name=".GetTraffic" />
     </application>
 

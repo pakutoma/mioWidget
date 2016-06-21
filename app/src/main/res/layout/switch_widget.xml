@@ -23,11 +23,11 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="ON"
         android:id="@+id/coupon_switch"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/data_traffic" />
+        android:layout_below="@+id/data_traffic"
+        android:text="@string/switch_text" />
 
 </RelativeLayout>

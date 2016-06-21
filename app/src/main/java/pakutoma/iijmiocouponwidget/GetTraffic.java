@@ -2,7 +2,6 @@ package pakutoma.iijmiocouponwidget;
 
 import android.app.IntentService;
 import android.content.Intent;
-import android.util.Log;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,9 +11,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.StringTokenizer;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Created by PAKUTOMA on 2016/06/21.
@@ -67,6 +63,7 @@ public class GetTraffic extends IntentService {
         }
         Intent callbackIntent = new Intent(ACTION_CALLBACK_GET_TRAFFIC);
         callbackIntent.putExtra("TRAFFIC",traffic);
+        callbackIntent.putExtra("COUPON",node.get("couponInfo").get(0).get("hdoInfo").get(0).get("couponUse").asBoolean());
         callbackIntent.setPackage("pakutoma.iijmiocouponwidget");
         startService(callbackIntent);
     }

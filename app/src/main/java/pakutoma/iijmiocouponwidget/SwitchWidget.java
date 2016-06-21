@@ -1,7 +1,6 @@
 package pakutoma.iijmiocouponwidget;
 
 import android.app.AlarmManager;
-import android.app.IntentService;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.appwidget.AppWidgetManager;
@@ -13,14 +12,7 @@ import android.os.IBinder;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.net.HttpURLConnection;
-
 import java.util.Locale;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Implementation of App Widget functionality.
@@ -30,14 +22,17 @@ public class SwitchWidget extends AppWidgetProvider {
 
     private static final String ACTION_GET_TRAFFIC = "pakutoma.iijmiocouponwidget.SwitchWidget.ACTION_GET_TRAFFIC";
     private static final String ACTION_SWITCH_COUPON = "pakutoma.iijmiocouponwidget.SwitchWidget.ACTION_SWITCH_COUPON";
-    private static final String ACTION_CALLBACK_GET_TRAFFIC = "pakutoma.iijmiocouponwidget.SwitchWidget.ACTION_CALLBACK_GET_TRAFFIC";
+    private static final String ACTION_CHANGE_COUPON = "pakutoma.iijmiocouponwidget.SwitchWidget.ACTION_CHANGE_COUPON";
+
+    private static Boolean isCouponEnable = true;
+
     public void onReceive(Context context, Intent intent) {
         super.onReceive(context, intent);
         if (intent.getAction().equals(ACTION_GET_TRAFFIC)) {
-            if (ACTION_GET_TRAFFIC.equals(intent.getAction())) {
-                Intent serviceIntent = new Intent(context, GetTraffic.class);
-                context.startService(serviceIntent);
-            }
+           if (ACTION_GET_TRAFFIC.equals(intent.getAction())) {
+                    Intent serviceIntent = new Intent(context, UpdateTraffic.class);
+                    context.startService(serviceIntent);
+           }
             setAlarm(context);
         }
     }
@@ -77,10 +72,8 @@ public class SwitchWidget extends AppWidgetProvider {
 
             RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.switch_widget);
             remoteViews.setTextViewText(R.id.data_traffic, widgetText);
-
-            ComponentName thisWidget = new ComponentName(this, SwitchWidget.class);
-            AppWidgetManager manager = AppWidgetManager.getInstance(this);
-            manager.updateAppWidget(thisWidget, remoteViews);
+            isCouponEnable = intent.getBooleanExtra("COUPON",true);
+            remoteViews.setTextViewText(R.id.coupon_switch, isCouponEnable ? "ON" : "OFF");
 
             return START_STICKY;
         }
@@ -92,7 +85,24 @@ public class SwitchWidget extends AppWidgetProvider {
 
     }
 
+    public static class ChangeSwitch extends Service {
+        @Override
+        public int onStartCommand(Intent intent, int flags,int startId) {
+            Toast.makeText(this,"Coupon変更完了",Toast.LENGTH_SHORT).show();
+            if(intent.getBooleanExtra("CHANGE",false)) {
+                isCouponEnable = !isCouponEnable;
+                Toast.makeText(this,isCouponEnable.toString(),Toast.LENGTH_SHORT).show();
+            }
+            RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.switch_widget);
+            remoteViews.setTextViewText(R.id.coupon_switch, isCouponEnable ? "ON" : "OFF");
+            return START_STICKY;
+        }
 
+        @Override
+        public IBinder onBind(Intent intent) {
+            return null;
+        }
+    }
 
     public static class SwitchCoupon extends Service {
         @Override
@@ -102,8 +112,11 @@ public class SwitchWidget extends AppWidgetProvider {
 
             RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.switch_widget);
             if (ACTION_SWITCH_COUPON.equals(intent.getAction())) {
-                remoteViews.setTextViewText(R.id.coupon_switch, "wait");
                 Toast.makeText(this, "ボタンが押された", Toast.LENGTH_SHORT).show();
+                Intent changeIntent = new Intent(ACTION_CHANGE_COUPON);
+                changeIntent.putExtra("SWITCH",!isCouponEnable);
+                changeIntent.setPackage("pakutoma.iijmiocouponwidget");
+                startService(changeIntent);
             }
 
             Intent clickIntent = new Intent();
