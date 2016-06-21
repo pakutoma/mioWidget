@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="pakutoma.iijmiocouponwidget">
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -18,14 +19,17 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/switch_widget_info" />
         </receiver>
-        <service android:enabled="true" android:name=".SwitchWidget$UpdateTraffic" />
-        <service android:enabled="true" android:name=".SwitchWidget$SwitchCoupon">
+        <service android:enabled="true" android:exported="false" android:name=".SwitchWidget$UpdateTraffic">
+            <intent-filter>
+                <action android:name="pakutoma.iijmiocouponwidget.SwitchWidget.ACTION_CALLBACK_GET_TRAFFIC" />
+            </intent-filter>
+        </service>
+        <service android:enabled="true" android:exported="false" android:name=".SwitchWidget$SwitchCoupon">
             <intent-filter>
                 <action android:name="pakutoma.iijmiocouponwidget.SwitchWidget.ACTION_SWITCH_COUPON" />
             </intent-filter>
         </service>
-        <uses-permission android:name="android.permission.INTERNET" />
-        <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+        <service android:enabled="true" android:name=".GetTraffic" />
     </application>
 
 </manifest>

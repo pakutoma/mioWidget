@@ -1,6 +1,7 @@
 package pakutoma.iijmiocouponwidget;
 
 import android.app.AlarmManager;
+import android.app.IntentService;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.appwidget.AppWidgetManager;
@@ -8,9 +9,7 @@ import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.IBinder;
-import android.os.AsyncTask;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
@@ -29,13 +28,14 @@ import java.util.regex.Pattern;
 public class SwitchWidget extends AppWidgetProvider {
 
 
-    private static final String ACTION_UPDATE_TRAFFIC = "pakutoma.iijmiocouponwidget.SwitchWidget.ACTION_UPDATE_TRAFFIC";
+    private static final String ACTION_GET_TRAFFIC = "pakutoma.iijmiocouponwidget.SwitchWidget.ACTION_GET_TRAFFIC";
     private static final String ACTION_SWITCH_COUPON = "pakutoma.iijmiocouponwidget.SwitchWidget.ACTION_SWITCH_COUPON";
+    private static final String ACTION_CALLBACK_GET_TRAFFIC = "pakutoma.iijmiocouponwidget.SwitchWidget.ACTION_CALLBACK_GET_TRAFFIC";
     public void onReceive(Context context, Intent intent) {
         super.onReceive(context, intent);
-        if (intent.getAction().equals(ACTION_UPDATE_TRAFFIC)) {
-            if (ACTION_UPDATE_TRAFFIC.equals(intent.getAction())) {
-                Intent serviceIntent = new Intent(context, UpdateTraffic.class);
+        if (intent.getAction().equals(ACTION_GET_TRAFFIC)) {
+            if (ACTION_GET_TRAFFIC.equals(intent.getAction())) {
+                Intent serviceIntent = new Intent(context, GetTraffic.class);
                 context.startService(serviceIntent);
             }
             setAlarm(context);
@@ -43,20 +43,20 @@ public class SwitchWidget extends AppWidgetProvider {
     }
     private void setAlarm(Context context) {
         Intent alarmIntent = new Intent(context, SwitchWidget.class);
-        alarmIntent.setAction(ACTION_UPDATE_TRAFFIC);
+        alarmIntent.setAction(ACTION_GET_TRAFFIC);
         PendingIntent operation = PendingIntent.getBroadcast(context, 0, alarmIntent, 0);
         AlarmManager am = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
         long now = System.currentTimeMillis();
         final long interval = 1000 * 60;
-        long oneSecondAfter = now + interval;
-        am.set(AlarmManager.RTC, oneSecondAfter, operation);
+        long oneMinuteAfter = now + interval;
+        am.set(AlarmManager.RTC, oneMinuteAfter, operation);
     }
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         setAlarm(context);
-        Intent updateTrafficIntent = new Intent(context, UpdateTraffic.class);
-        context.startService(updateTrafficIntent);
+        Intent GetTrafficIntent = new Intent(context, GetTraffic.class);
+        context.startService(GetTrafficIntent);
         Intent switchCouponIntent = new Intent(context, SwitchCoupon.class);
         context.startService(switchCouponIntent);
     }
@@ -64,64 +64,33 @@ public class SwitchWidget extends AppWidgetProvider {
     public static class UpdateTraffic extends Service {
         @Override
         public int onStartCommand(Intent intent, int flags,int startId) {
-            Toast.makeText(this, "UpdateTraffic開始", Toast.LENGTH_SHORT).show();
-            CharSequence widgetText;
-            int traffic = getTraffic();
-            if (traffic < 1000) {
-                widgetText = String.format(Locale.US,"%dMB",traffic);
-            } else if (traffic < 10000) {
-                widgetText = String.format(Locale.US,"%1$.2fGB",traffic / 1000.0);
-            } else {
-                widgetText = String.format(Locale.US,"%1$.1fGB",traffic / 1000.0);
-            }
-            // Construct the RemoteViews object
-            RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.switch_widget);
-            remoteViews.setTextViewText(R.id.data_traffic, widgetText);
-
-            // Instruct the widget manager to update the widget
-            ComponentName thisWidget = new ComponentName(this, SwitchWidget.class);
-            AppWidgetManager manager = AppWidgetManager.getInstance(this);
-            manager.updateAppWidget(thisWidget, remoteViews);
-            return START_STICKY;
-        }
-
-        private int getTraffic() {
-            HttpURLConnection connection;
-            StringBuilder sb = new StringBuilder();
-            try {
-                URL url = new URL("https://api.iijmio.jp/mobile/d/v1/coupon/");
-                connection = (HttpURLConnection) url.openConnection();
-                connection.setRequestMethod("GET");
-                connection.setInstanceFollowRedirects(false);
-                connection.setRequestProperty("X-IIJmio-Developer", "IilCI1xrAgqKrXV9Zt4");
-                connection.setRequestProperty("X-IIJmio-Authorization", "v7jUG7mxz4Vy74dBLlHlXekNdoLalKW1466339013");
-                connection.connect();
-                BufferedReader br = new BufferedReader( new InputStreamReader(connection.getInputStream()));
-                String line;
-                while ((line = br.readLine()) != null) {
-                    sb.append(line);
+            if (ACTION_CALLBACK_GET_TRAFFIC.equals(intent.getAction())) {
+                Toast.makeText(this, "Traffic取得完了", Toast.LENGTH_SHORT).show();
+                CharSequence widgetText;
+                int traffic = intent.getIntExtra("TRAFFIC",0);
+                if (traffic < 1000) {
+                    widgetText = String.format(Locale.US,"%dMB",traffic);
+                } else if (traffic < 10000) {
+                    widgetText = String.format(Locale.US,"%1$.2fGB",traffic / 1000.0);
+                } else {
+                    widgetText = String.format(Locale.US,"%1$.1fGB",traffic / 1000.0);
                 }
-                br.close();
-            } catch (Exception e) {
-                Toast.makeText(this, "error: " + e.toString(), Toast.LENGTH_SHORT).show();
-            }
-            Toast.makeText(this, sb.toString(), Toast.LENGTH_SHORT).show();
-            String regex = "\"volume\": (\\d+)";
-            Pattern p = Pattern.compile(regex,Pattern.MULTILINE);
-            Matcher m = p.matcher(sb.toString());
-            int traffic = 0;
-            while (m.find()){
-                traffic += Integer.parseInt(m.group(1));
-            }
-            Toast.makeText(this, String.valueOf(traffic), Toast.LENGTH_SHORT).show();
-            return traffic;
 
+                RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.switch_widget);
+                remoteViews.setTextViewText(R.id.data_traffic, widgetText);
+
+                ComponentName thisWidget = new ComponentName(this, SwitchWidget.class);
+                AppWidgetManager manager = AppWidgetManager.getInstance(this);
+                manager.updateAppWidget(thisWidget, remoteViews);
+            }
+            return START_STICKY;
         }
 
         @Override
         public IBinder onBind(Intent intent) {
             return null;
         }
+
     }
 
 
