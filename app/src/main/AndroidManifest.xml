@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="pakutoma.iijmiocouponwidget">
+
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
@@ -19,27 +20,55 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/switch_widget_info" />
         </receiver>
-        <service android:enabled="true" android:exported="false" android:name=".SwitchWidget$UpdateTraffic">
+
+        <service
+            android:name=".SwitchWidget$UpdateTraffic"
+            android:enabled="true"
+            android:exported="false">
             <intent-filter>
                 <action android:name="pakutoma.iijmiocouponwidget.SwitchWidget.ACTION_CALLBACK_GET_TRAFFIC" />
             </intent-filter>
         </service>
-        <service android:enabled="true" android:exported="false" android:name=".SwitchWidget$SwitchCoupon">
+        <service
+            android:name=".SwitchWidget$SwitchCoupon"
+            android:enabled="true"
+            android:exported="false">
             <intent-filter>
                 <action android:name="pakutoma.iijmiocouponwidget.SwitchWidget.ACTION_SWITCH_COUPON" />
             </intent-filter>
         </service>
-        <service android:enabled="true" android:exported="false" android:name=".SwitchWidget$ChangeSwitch">
+        <service
+            android:name=".SwitchWidget$ChangeSwitch"
+            android:enabled="true"
+            android:exported="false">
             <intent-filter>
                 <action android:name="pakutoma.iijmiocouponwidget.SwitchWidget.ACTION_CALLBACK_CHANGE_COUPON" />
             </intent-filter>
         </service>
-        <service android:enabled="true" android:exported="false" android:name=".ChangeCoupon">
+        <service
+            android:name=".ChangeCoupon"
+            android:enabled="true"
+            android:exported="false">
             <intent-filter>
                 <action android:name="pakutoma.iijmiocouponwidget.SwitchWidget.ACTION_CHANGE_COUPON" />
             </intent-filter>
         </service>
-        <service android:enabled="true" android:name=".GetTraffic" />
+        <service
+            android:name=".GetTraffic"
+            android:enabled="true" />
+
+        <activity android:name=".AuthActivity"  android:launchMode="singleTask" android:theme="@android:style/Theme.Translucent.NoTitleBar">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="callback"
+                    android:scheme="pakutoma.iijmiocouponwidget" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

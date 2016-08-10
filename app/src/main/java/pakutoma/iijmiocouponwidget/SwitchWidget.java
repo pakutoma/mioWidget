@@ -8,6 +8,8 @@ import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.IBinder;
 import android.widget.RemoteViews;
 import android.widget.Toast;
@@ -50,8 +52,8 @@ public class SwitchWidget extends AppWidgetProvider {
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         setAlarm(context);
-        Intent GetTrafficIntent = new Intent(context, GetTraffic.class);
-        context.startService(GetTrafficIntent);
+        Intent getTrafficIntent = new Intent(context, GetTraffic.class);
+        context.startService(getTrafficIntent);
         Intent switchCouponIntent = new Intent(context, SwitchCoupon.class);
         context.startService(switchCouponIntent);
     }
@@ -59,6 +61,17 @@ public class SwitchWidget extends AppWidgetProvider {
     public static class UpdateTraffic extends Service {
         @Override
         public int onStartCommand(Intent intent, int flags,int startId) {
+            if (!intent.getBooleanExtra("HAS_TOKEN",false)) {
+                Toast.makeText(this, "Token未取得", Toast.LENGTH_SHORT).show();
+                RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.switch_widget);
+                remoteViews.setTextViewText(R.id.data_traffic, "未認証");
+                remoteViews.setTextViewText(R.id.coupon_switch, "認証");
+                ComponentName thisWidget = new ComponentName(this, SwitchWidget.class);
+                AppWidgetManager manager = AppWidgetManager.getInstance(this);
+                manager.updateAppWidget(thisWidget, remoteViews);
+                return START_STICKY;
+            }
+
             Toast.makeText(this, "Traffic取得完了", Toast.LENGTH_SHORT).show();
             CharSequence widgetText;
             int traffic = intent.getIntExtra("TRAFFIC",0);
@@ -118,10 +131,26 @@ public class SwitchWidget extends AppWidgetProvider {
             RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.switch_widget);
             if (ACTION_SWITCH_COUPON.equals(intent.getAction())) {
                 Toast.makeText(this, "ボタンが押された", Toast.LENGTH_SHORT).show();
-                Intent changeIntent = new Intent(ACTION_CHANGE_COUPON);
-                changeIntent.putExtra("SWITCH",!isCouponEnable);
-                changeIntent.setPackage("pakutoma.iijmiocouponwidget");
-                startService(changeIntent);
+                SharedPreferences preferences = getSharedPreferences("iijmio_token", MODE_PRIVATE);
+                if (!preferences.getBoolean("has_token",false)) {
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("https://api.iijmio.jp/mobile/d/v1/authorization/");
+                    sb.append("?response_type=token");
+                    sb.append("&client_id=IilCI1xrAgqKrXV9Zt4");
+                    sb.append("&state=example_state");
+                    sb.append("&redirect_uri=pakutoma.iijmiocouponwidget://callback");
+                    Uri uri = Uri.parse(sb.toString());
+                    Intent authIntent = new Intent(Intent.ACTION_VIEW, uri);
+                    authIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(authIntent);
+                } else {
+                    Intent changeIntent = new Intent(ACTION_CHANGE_COUPON);
+                    changeIntent.putExtra("SWITCH",!isCouponEnable);
+                    changeIntent.setPackage("pakutoma.iijmiocouponwidget");
+                    startService(changeIntent);
+                }
+
+
             }
 
             Intent clickIntent = new Intent();
