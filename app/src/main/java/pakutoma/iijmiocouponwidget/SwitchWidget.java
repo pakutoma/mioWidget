@@ -107,8 +107,6 @@ public class SwitchWidget extends AppWidgetProvider {
                 Toast.makeText(this, "Token未取得", Toast.LENGTH_SHORT).show();
                 return START_STICKY;
             }
-            //Toast.makeText(this, intent.getStringExtra("RETURN_CODE"), Toast.LENGTH_SHORT).show();
-
             if(intent.getBooleanExtra("CHANGE",false)) {
                 isCouponEnable = !isCouponEnable;
                 Toast.makeText(this,"Coupon変更成功",Toast.LENGTH_SHORT).show();

@@ -10,7 +10,9 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
@@ -61,6 +63,7 @@ public class ChangeCoupon extends IntentService {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         ObjectMapper mapper = new ObjectMapper();
         JsonNode getNode = null;
         try {
@@ -75,6 +78,7 @@ public class ChangeCoupon extends IntentService {
             sim.put("hdoServiceCode",item.get("hdoServiceCode").asText());
             sim.put("couponUse",intent.getBooleanExtra("SWITCH",false));
         }
+        sb = null;
         try {
             URL url = new URL("https://api.iijmio.jp/mobile/d/v1/coupon/");
             connection = (HttpURLConnection) url.openConnection();
@@ -96,19 +100,18 @@ public class ChangeCoupon extends IntentService {
             br.close();
             connection.disconnect();
         } catch (Exception e) {
+            Intent callbackIntent = new Intent(ACTION_CALLBACK_CHANGE_COUPON);
+            callbackIntent.putExtra("CHANGE",false);
+            callbackIntent.putExtra("HAS_TOKEN",true);
+            callbackIntent.setPackage("pakutoma.iijmiocouponwidget");
+            startService(callbackIntent);
             e.printStackTrace();
-        }
-        String returnCode = "";
-        try {
-            returnCode = mapper.readTree(sb.toString()).get("returnCode").asText();
-        } catch (IOException e) {
-            e.printStackTrace();
+            return;
         }
 
         Intent callbackIntent = new Intent(ACTION_CALLBACK_CHANGE_COUPON);
-        callbackIntent.putExtra("CHANGE",returnCode.equals("OK"));
+        callbackIntent.putExtra("CHANGE",true);
         callbackIntent.putExtra("HAS_TOKEN",true);
-        callbackIntent.putExtra("RETURN_CODE",returnCode);
         callbackIntent.setPackage("pakutoma.iijmiocouponwidget");
         startService(callbackIntent);
     }
