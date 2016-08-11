@@ -21,18 +21,19 @@ public class AuthActivity extends Activity {
         if (intent != null) {
             String data = intent.getDataString();
             if (data != null) {
-                Toast.makeText(this, data, Toast.LENGTH_SHORT).show();
                 Uri uri = Uri.parse(data);
                 Pattern p = Pattern.compile("(?<=access_token=).+?(?=&)");
                 Matcher m = p.matcher(uri.getFragment());
                 if(m.find()) {
                     String token = m.group();
-                    Toast.makeText(this, token, Toast.LENGTH_SHORT).show();
                     SharedPreferences preferences = getSharedPreferences("iijmio_token", MODE_PRIVATE);
                     SharedPreferences.Editor editor = preferences.edit();
                     editor.putString("X-IIJmio-Authorization",token);
                     editor.putBoolean("has_token",true);
                     editor.apply();
+                    Toast.makeText(this, "認証を完了しました", Toast.LENGTH_SHORT).show();
+                    Intent getTrafficIntent = new Intent(getApplicationContext(), GetTraffic.class);
+                    getApplicationContext().startService(getTrafficIntent);
                 }
             }
         }

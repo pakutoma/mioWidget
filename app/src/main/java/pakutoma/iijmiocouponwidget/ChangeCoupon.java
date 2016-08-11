@@ -2,6 +2,7 @@ package pakutoma.iijmiocouponwidget;
 
 import android.app.IntentService;
 import android.content.Intent;
+import android.content.SharedPreferences;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -28,6 +29,19 @@ public class ChangeCoupon extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
+        SharedPreferences preferences = getSharedPreferences("iijmio_token", MODE_PRIVATE);
+        String accessToken = preferences.getString("X-IIJmio-Authorization","");
+        if (accessToken.equals("")) {
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putBoolean("has_token",false);
+            editor.apply();
+
+            Intent callbackIntent = new Intent(ACTION_CALLBACK_CHANGE_COUPON);
+            callbackIntent.putExtra("HAS_TOKEN",false);
+            callbackIntent.setPackage("pakutoma.iijmiocouponwidget");
+            startService(callbackIntent);
+            return;
+        }
         HttpURLConnection connection;
         StringBuilder sb = new StringBuilder();
         try {
@@ -36,7 +50,7 @@ public class ChangeCoupon extends IntentService {
             connection.setRequestMethod("GET");
             connection.setInstanceFollowRedirects(false);
             connection.setRequestProperty("X-IIJmio-Developer", "IilCI1xrAgqKrXV9Zt4");
-            connection.setRequestProperty("X-IIJmio-Authorization", "0O1PXxXNIfdPLeP4A04NJ9C3J1OTBVL1466469891");
+            connection.setRequestProperty("X-IIJmio-Authorization", accessToken);
             connection.connect();
             BufferedReader br = new BufferedReader( new InputStreamReader(connection.getInputStream()));
             String line;
@@ -69,7 +83,7 @@ public class ChangeCoupon extends IntentService {
             connection.setRequestProperty("Accept-Language", "jp");
             connection.setDoOutput(true);
             connection.setRequestProperty("X-IIJmio-Developer", "IilCI1xrAgqKrXV9Zt4");
-            connection.setRequestProperty("X-IIJmio-Authorization", "DTmZOM0TiVgMYcfLSnBiluchqHIBn8F1466522591");
+            connection.setRequestProperty("X-IIJmio-Authorization", accessToken);
             connection.setRequestProperty("Content-Type", "application/json");
             OutputStream os = connection.getOutputStream();
             mapper.writeValue(os,putNode);
@@ -93,6 +107,8 @@ public class ChangeCoupon extends IntentService {
 
         Intent callbackIntent = new Intent(ACTION_CALLBACK_CHANGE_COUPON);
         callbackIntent.putExtra("CHANGE",returnCode.equals("OK"));
+        callbackIntent.putExtra("HAS_TOKEN",true);
+        callbackIntent.putExtra("RETURN_CODE",returnCode);
         callbackIntent.setPackage("pakutoma.iijmiocouponwidget");
         startService(callbackIntent);
     }
