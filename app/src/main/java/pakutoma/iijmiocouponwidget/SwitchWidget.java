@@ -104,14 +104,14 @@ public class SwitchWidget extends AppWidgetProvider {
         @Override
         public int onStartCommand(Intent intent, int flags,int startId) {
             if (!intent.getBooleanExtra("HAS_TOKEN",false)) {
-                Toast.makeText(this, "Token未取得", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "認証が行われていません。", Toast.LENGTH_SHORT).show();
                 return START_STICKY;
             }
             if(intent.getBooleanExtra("CHANGE",false)) {
                 isCouponEnable = !isCouponEnable;
-                Toast.makeText(this,"Coupon変更成功",Toast.LENGTH_SHORT).show();
+                Toast.makeText(this,"クーポンが" + (isCouponEnable ? "ON" : "OFF") + "になりました。",Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(this,"Coupon変更失敗",Toast.LENGTH_SHORT).show();
+                Toast.makeText(this,"切り替えに失敗しました。",Toast.LENGTH_SHORT).show();
             }
             RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.switch_widget);
             remoteViews.setTextViewText(R.id.coupon_switch, isCouponEnable ? "ON" : "OFF");

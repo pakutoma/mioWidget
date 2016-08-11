@@ -31,9 +31,13 @@ public class AuthActivity extends Activity {
                     editor.putString("X-IIJmio-Authorization",token);
                     editor.putBoolean("has_token",true);
                     editor.apply();
-                    Toast.makeText(this, "認証を完了しました", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "認証が完了しました。", Toast.LENGTH_SHORT).show();
                     Intent getTrafficIntent = new Intent(getApplicationContext(), GetTraffic.class);
                     getApplicationContext().startService(getTrafficIntent);
+                    Intent homeIntent = new Intent(Intent.ACTION_MAIN);
+                    homeIntent.addCategory(Intent.CATEGORY_HOME);
+                    homeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(homeIntent);
                 }
             }
         }
