@@ -109,7 +109,7 @@ public class SwitchWidget extends AppWidgetProvider {
             }
             if(intent.getBooleanExtra("CHANGE",false)) {
                 isCouponEnable = !isCouponEnable;
-                Toast.makeText(this,"クーポンが" + (isCouponEnable ? "ON" : "OFF") + "になりました。",Toast.LENGTH_SHORT).show();
+                Toast.makeText(this,"クーポンを" + (isCouponEnable ? "ON" : "OFF") + "に変更しました。",Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(this,"切り替えに失敗しました。",Toast.LENGTH_SHORT).show();
             }
