@@ -62,10 +62,19 @@ public class SwitchWidget extends AppWidgetProvider {
         @Override
         public int onStartCommand(Intent intent, int flags,int startId) {
             if (!intent.getBooleanExtra("HAS_TOKEN",false)) {
-                //Toast.makeText(this, "Token未取得", Toast.LENGTH_SHORT).show();
                 RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.switch_widget);
                 remoteViews.setTextViewText(R.id.data_traffic, "未認証");
                 remoteViews.setTextViewText(R.id.coupon_switch, "認証");
+                ComponentName thisWidget = new ComponentName(this, SwitchWidget.class);
+                AppWidgetManager manager = AppWidgetManager.getInstance(this);
+                manager.updateAppWidget(thisWidget, remoteViews);
+                return START_STICKY;
+            }
+
+            if (!intent.getBooleanExtra(("GET"),false)) {
+                RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.switch_widget);
+                remoteViews.setTextViewText(R.id.data_traffic, "通信");
+                remoteViews.setTextViewText(R.id.coupon_switch, "エラー");
                 ComponentName thisWidget = new ComponentName(this, SwitchWidget.class);
                 AppWidgetManager manager = AppWidgetManager.getInstance(this);
                 manager.updateAppWidget(thisWidget, remoteViews);
@@ -137,13 +146,12 @@ public class SwitchWidget extends AppWidgetProvider {
             if (ACTION_SWITCH_COUPON.equals(intent.getAction())) {
                 SharedPreferences preferences = getSharedPreferences("iijmio_token", MODE_PRIVATE);
                 if (!preferences.getBoolean("has_token",false)) {
-                    StringBuilder sb = new StringBuilder();
-                    sb.append("https://api.iijmio.jp/mobile/d/v1/authorization/");
-                    sb.append("?response_type=token");
-                    sb.append("&client_id=IilCI1xrAgqKrXV9Zt4");
-                    sb.append("&state=example_state");
-                    sb.append("&redirect_uri=pakutoma.iijmiocouponwidget://callback");
-                    Uri uri = Uri.parse(sb.toString());
+                    Uri.Builder builder = new Uri.Builder();
+                    builder.scheme("https");
+                    builder.authority("api.iijmio.jp");
+                    builder.path("/mobile/d/v1/authorization");
+                    builder.encodedQuery("response_type=token&client_id=IilCI1xrAgqKrXV9Zt4&state=example_state&redirect_uri=pakutoma.iijmiocouponwidget://callback");
+                    Uri uri = builder.build();
                     Intent authIntent = new Intent(Intent.ACTION_VIEW, uri);
                     authIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(authIntent);

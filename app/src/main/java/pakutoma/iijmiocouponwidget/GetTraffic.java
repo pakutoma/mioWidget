@@ -7,11 +7,8 @@ import android.content.SharedPreferences;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
+
 
 /**
  * Created by PAKUTOMA on 2016/06/21.
@@ -33,53 +30,58 @@ public class GetTraffic extends IntentService {
             editor.putBoolean("has_token",false);
             editor.apply();
 
-            Intent callbackIntent = new Intent(ACTION_CALLBACK_GET_TRAFFIC);
-            callbackIntent.putExtra("HAS_TOKEN",false);
-            callbackIntent.setPackage("pakutoma.iijmiocouponwidget");
-            startService(callbackIntent);
+            sendCallback(false,false,-1,false);
             return;
         }
 
-        HttpURLConnection connection;
-        StringBuilder sb = new StringBuilder();
+        CouponAPI coupon = new CouponAPI();
+        String couponStatus;
         try {
-            URL url = new URL("https://api.iijmio.jp/mobile/d/v1/coupon/");
-            connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("GET");
-            connection.setInstanceFollowRedirects(false);
-            connection.setRequestProperty("X-IIJmio-Developer", "IilCI1xrAgqKrXV9Zt4");
-            connection.setRequestProperty("X-IIJmio-Authorization", accessToken);
-            connection.connect();
-            BufferedReader br = new BufferedReader( new InputStreamReader(connection.getInputStream()));
-            String line;
-            while ((line = br.readLine()) != null) {
-                sb.append(line);
-            }
-            br.close();
+            couponStatus = coupon.getCouponStatus(accessToken);
         } catch (Exception e) {
-            e.printStackTrace();
+            sendCallback(true,false,-1,false);
+            return;
         }
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode node = null;
-        try {
-            node = mapper.readTree(sb.toString());
 
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode statusNode;
+
+        try {
+            statusNode = mapper.readTree(couponStatus);
         } catch (IOException e) {
-            e.printStackTrace();
+            sendCallback(true,false,-1,false);
+            return;
         }
+
+        boolean isOnCoupon = statusNode.get("couponInfo").get(0).get("hdoInfo").get(0).get("couponUse").asBoolean();
+        int traffic = sumTraffic(statusNode);
+
+        sendCallback(true,true,traffic,isOnCoupon);
+    }
+
+    private int sumTraffic (JsonNode statusNode) {
         int traffic = 0;
-        if (node != null && node.get("returnCode").asText().equals("OK")) {
-            for (JsonNode item : node.get("couponInfo").get(0).get("coupon")) {
+        if (statusNode != null && statusNode.get("returnCode").asText().equals("OK")) {
+            for (JsonNode item : statusNode.get("couponInfo").get(0).get("coupon")) {
                 traffic += item.get("volume").asInt();
             }
-            for (JsonNode item : node.get("couponInfo").get(0).get("hdoInfo")) {
+            for (JsonNode item : statusNode.get("couponInfo").get(0).get("hdoInfo")) {
                 traffic += item.get("coupon").get(0).get("volume").asInt();
             }
         }
+        return traffic;
+    }
+
+    private void sendCallback (boolean hasToken,boolean couldGet,int traffic,boolean isOnCoupon) {
         Intent callbackIntent = new Intent(ACTION_CALLBACK_GET_TRAFFIC);
-        callbackIntent.putExtra("HAS_TOKEN",true);
-        callbackIntent.putExtra("TRAFFIC",traffic);
-        callbackIntent.putExtra("COUPON",node.get("couponInfo").get(0).get("hdoInfo").get(0).get("couponUse").asBoolean());
+        callbackIntent.putExtra("HAS_TOKEN",hasToken);
+        if (hasToken) {
+            callbackIntent.putExtra("GET",couldGet);
+        }
+        if (couldGet){
+            callbackIntent.putExtra("TRAFFIC",traffic);
+            callbackIntent.putExtra("COUPON",isOnCoupon);
+        }
         callbackIntent.setPackage("pakutoma.iijmiocouponwidget");
         startService(callbackIntent);
     }

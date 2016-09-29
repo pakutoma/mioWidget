@@ -9,17 +9,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.PrintStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
+
 
 /**
+ * ChangeCoupon change iijmio's coupon switch on/off.
  * Created by PAKUTOMA on 2016/06/21.
  */
 public class ChangeCoupon extends IntentService {
@@ -38,81 +32,58 @@ public class ChangeCoupon extends IntentService {
             editor.putBoolean("has_token",false);
             editor.apply();
 
-            Intent callbackIntent = new Intent(ACTION_CALLBACK_CHANGE_COUPON);
-            callbackIntent.putExtra("HAS_TOKEN",false);
-            callbackIntent.setPackage("pakutoma.iijmiocouponwidget");
-            startService(callbackIntent);
+            sendCallback(false,false);
             return;
         }
-        HttpURLConnection connection;
-        StringBuilder sb = new StringBuilder();
+
+        CouponAPI coupon = new CouponAPI();
+
+        String couponStatus;
         try {
-            URL url = new URL("https://api.iijmio.jp/mobile/d/v1/coupon/");
-            connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("GET");
-            connection.setInstanceFollowRedirects(false);
-            connection.setRequestProperty("X-IIJmio-Developer", "IilCI1xrAgqKrXV9Zt4");
-            connection.setRequestProperty("X-IIJmio-Authorization", accessToken);
-            connection.connect();
-            BufferedReader br = new BufferedReader( new InputStreamReader(connection.getInputStream()));
-            String line;
-            while ((line = br.readLine()) != null) {
-                sb.append(line);
-            }
-            br.close();
-        } catch (Exception e) {
-            e.printStackTrace();
+            couponStatus = coupon.getCouponStatus(accessToken);
+        } catch (IOException e) {
+            sendCallback(true,false);
+            return;
         }
 
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode getNode = null;
+        ObjectNode sendNode;
         try {
-            getNode = mapper.readTree(sb.toString());
+            sendNode = createToSendJsonNode(couponStatus,intent.getBooleanExtra("SWITCH",false));
         } catch (IOException e) {
-            e.printStackTrace();
+            sendCallback(true,false);
+            return;
         }
+
+        try {
+            coupon.putCouponStatus(accessToken,sendNode);
+        } catch (IOException e) {
+            sendCallback(true,false);
+            return;
+        }
+
+        sendCallback(true,true);
+    }
+
+    private void sendCallback(boolean hasToken,boolean isChanged) {
+        Intent callbackIntent = new Intent(ACTION_CALLBACK_CHANGE_COUPON);
+        callbackIntent.putExtra("HAS_TOKEN",hasToken);
+        if(hasToken) {
+            callbackIntent.putExtra("CHANGE",isChanged);
+        }
+        callbackIntent.setPackage("pakutoma.iijmiocouponwidget");
+        startService(callbackIntent);
+    }
+
+    private ObjectNode createToSendJsonNode(String couponStatus,boolean isOnSwitch) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode getNode = mapper.readTree(couponStatus);
         ObjectNode putNode = mapper.createObjectNode();
         ArrayNode hdoNode = putNode.putArray("couponInfo").addObject().putArray("hdoInfo");
         for (JsonNode item : getNode.get("couponInfo").get(0).get("hdoInfo")) {
             ObjectNode sim = hdoNode.addObject();
             sim.put("hdoServiceCode",item.get("hdoServiceCode").asText());
-            sim.put("couponUse",intent.getBooleanExtra("SWITCH",false));
+            sim.put("couponUse",isOnSwitch);
         }
-        sb = null;
-        try {
-            URL url = new URL("https://api.iijmio.jp/mobile/d/v1/coupon/");
-            connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("PUT");
-            connection.setInstanceFollowRedirects(false);
-            connection.setRequestProperty("Accept-Language", "jp");
-            connection.setDoOutput(true);
-            connection.setRequestProperty("X-IIJmio-Developer", "IilCI1xrAgqKrXV9Zt4");
-            connection.setRequestProperty("X-IIJmio-Authorization", accessToken);
-            connection.setRequestProperty("Content-Type", "application/json");
-            OutputStream os = connection.getOutputStream();
-            mapper.writeValue(os,putNode);
-            BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream(),"UTF-8"));
-            String line;
-            sb = new StringBuilder();
-            while ((line = br.readLine()) != null) {
-                sb.append(line);
-            }
-            br.close();
-            connection.disconnect();
-        } catch (Exception e) {
-            Intent callbackIntent = new Intent(ACTION_CALLBACK_CHANGE_COUPON);
-            callbackIntent.putExtra("CHANGE",false);
-            callbackIntent.putExtra("HAS_TOKEN",true);
-            callbackIntent.setPackage("pakutoma.iijmiocouponwidget");
-            startService(callbackIntent);
-            e.printStackTrace();
-            return;
-        }
-
-        Intent callbackIntent = new Intent(ACTION_CALLBACK_CHANGE_COUPON);
-        callbackIntent.putExtra("CHANGE",true);
-        callbackIntent.putExtra("HAS_TOKEN",true);
-        callbackIntent.setPackage("pakutoma.iijmiocouponwidget");
-        startService(callbackIntent);
+        return putNode;
     }
 }
