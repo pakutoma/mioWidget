@@ -30,23 +30,31 @@ public class SwitchWidget extends AppWidgetProvider {
 
     public void onReceive(Context context, Intent intent) {
         super.onReceive(context, intent);
+
         if (intent.getAction().equals(ACTION_GET_TRAFFIC)) {
-           if (ACTION_GET_TRAFFIC.equals(intent.getAction())) {
-                    Intent serviceIntent = new Intent(context, GetTraffic.class);
-                    context.startService(serviceIntent);
-           }
             setAlarm(context);
+            Intent getTrafficIntent = new Intent(context, GetTraffic.class);
+            context.startService(getTrafficIntent);
+        }
+
+        if (intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED)) {
+            setAlarm(context);
+            Intent getTrafficIntent = new Intent(context, GetTraffic.class);
+            context.startService(getTrafficIntent);
+            Intent switchCouponIntent = new Intent(context, SwitchCoupon.class);
+            context.startService(switchCouponIntent);
         }
     }
+
     private void setAlarm(Context context) {
         Intent alarmIntent = new Intent(context, SwitchWidget.class);
         alarmIntent.setAction(ACTION_GET_TRAFFIC);
         PendingIntent operation = PendingIntent.getBroadcast(context, 0, alarmIntent, 0);
         AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         long now = System.currentTimeMillis();
-        final long interval = 1000 * 60;
-        long oneMinuteAfter = now + interval;
-        am.set(AlarmManager.RTC, oneMinuteAfter, operation);
+        final long interval = 1000 * 60 * 10;
+        long nextAlarm = now + interval;
+        am.set(AlarmManager.RTC, nextAlarm, operation);
     }
 
     @Override
@@ -141,8 +149,8 @@ public class SwitchWidget extends AppWidgetProvider {
         public int onStartCommand(Intent intent, int flags, int startId) {
             ComponentName thisWidget = new ComponentName(this, SwitchWidget.class);
             AppWidgetManager manager = AppWidgetManager.getInstance(this);
-
             RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.switch_widget);
+
             if (ACTION_SWITCH_COUPON.equals(intent.getAction())) {
                 SharedPreferences preferences = getSharedPreferences("iijmio_token", MODE_PRIVATE);
                 if (!preferences.getBoolean("has_token",false)) {
@@ -161,8 +169,6 @@ public class SwitchWidget extends AppWidgetProvider {
                     changeIntent.setPackage("pakutoma.iijmiocouponwidget");
                     startService(changeIntent);
                 }
-
-
             }
 
             Intent clickIntent = new Intent();
