@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+    <PreferenceScreen
+        android:title="アカウント情報"
+        android:key="accountSetting">
+        >
+    </PreferenceScreen>
+    <PreferenceScreen
+        android:title="設定"
+        android:key="preference" />
+    <pakutoma.iijmiocouponwidget.AboutDialog
+        android:title="このアプリについて"
+        android:key="about" />
+    <pakutoma.iijmiocouponwidget.LicenseDialog
+        android:title="オープンソースライセンス"
+        android:key="openSourceLicense" />
+</PreferenceScreen>

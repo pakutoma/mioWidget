@@ -3,7 +3,7 @@
     package="pakutoma.iijmiocouponwidget">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
         android:allowBackup="true"
@@ -11,12 +11,14 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <receiver android:name=".SwitchWidget" android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
-
+        <receiver
+            android:name=".SwitchWidget"
+            android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-                <action android:name="android.intent.action.BOOT_COMPLETED" />_
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                _
             </intent-filter>
 
             <meta-data
@@ -60,7 +62,10 @@
             android:name=".GetTraffic"
             android:enabled="true" />
 
-        <activity android:name=".AuthActivity"  android:launchMode="singleTask" android:theme="@android:style/Theme.Translucent.NoTitleBar">
+        <activity
+            android:name=".AuthActivity"
+            android:launchMode="singleTask"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -70,6 +75,13 @@
                 <data
                     android:host="callback"
                     android:scheme="pakutoma.iijmiocouponwidget" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".MainSettingsActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
     </application>
