@@ -36,26 +36,10 @@ public class ChangeCoupon extends IntentService {
             return;
         }
 
-        CouponAPI coupon = new CouponAPI();
-
-        String couponStatus;
+        CouponAPI coupon = new CouponAPI(accessToken);
+        CouponData cd = new CouponData(intent.getBooleanExtra("SWITCH",false));
         try {
-            couponStatus = coupon.getCouponStatus(accessToken);
-        } catch (IOException e) {
-            sendCallback(true,false);
-            return;
-        }
-
-        ObjectNode sendNode;
-        try {
-            sendNode = createToSendJsonNode(couponStatus,intent.getBooleanExtra("SWITCH",false));
-        } catch (IOException e) {
-            sendCallback(true,false);
-            return;
-        }
-
-        try {
-            coupon.putCouponStatus(accessToken,sendNode);
+            coupon.changeCouponStatus(cd);
         } catch (IOException e) {
             sendCallback(true,false);
             return;
@@ -74,16 +58,4 @@ public class ChangeCoupon extends IntentService {
         startService(callbackIntent);
     }
 
-    private ObjectNode createToSendJsonNode(String couponStatus,boolean isOnSwitch) throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode getNode = mapper.readTree(couponStatus);
-        ObjectNode putNode = mapper.createObjectNode();
-        ArrayNode hdoNode = putNode.putArray("couponInfo").addObject().putArray("hdoInfo");
-        for (JsonNode item : getNode.get("couponInfo").get(0).get("hdoInfo")) {
-            ObjectNode sim = hdoNode.addObject();
-            sim.put("hdoServiceCode",item.get("hdoServiceCode").asText());
-            sim.put("couponUse",isOnSwitch);
-        }
-        return putNode;
-    }
 }

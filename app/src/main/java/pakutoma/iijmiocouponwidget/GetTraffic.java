@@ -34,43 +34,21 @@ public class GetTraffic extends IntentService {
             return;
         }
 
-        CouponAPI coupon = new CouponAPI();
-        String couponStatus;
+        CouponAPI coupon = new CouponAPI(accessToken);
+        CouponData cd;
         try {
-            couponStatus = coupon.getCouponStatus(accessToken);
+            cd = coupon.getCouponData();
         } catch (Exception e) {
             sendCallback(true,false,-1,false);
             return;
         }
 
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode statusNode;
-
-        try {
-            statusNode = mapper.readTree(couponStatus);
-        } catch (IOException e) {
-            sendCallback(true,false,-1,false);
-            return;
-        }
-
-        boolean isOnCoupon = statusNode.get("couponInfo").get(0).get("hdoInfo").get(0).get("couponUse").asBoolean();
-        int traffic = sumTraffic(statusNode);
+        boolean isOnCoupon = cd.getSwitch();
+        int traffic = cd.getTraffic();
 
         sendCallback(true,true,traffic,isOnCoupon);
     }
 
-    private int sumTraffic (JsonNode statusNode) {
-        int traffic = 0;
-        if (statusNode != null && statusNode.get("returnCode").asText().equals("OK")) {
-            for (JsonNode item : statusNode.get("couponInfo").get(0).get("coupon")) {
-                traffic += item.get("volume").asInt();
-            }
-            for (JsonNode item : statusNode.get("couponInfo").get(0).get("hdoInfo")) {
-                traffic += item.get("coupon").get(0).get("volume").asInt();
-            }
-        }
-        return traffic;
-    }
 
     private void sendCallback (boolean hasToken,boolean couldGet,int traffic,boolean isOnCoupon) {
         Intent callbackIntent = new Intent(ACTION_CALLBACK_GET_TRAFFIC);

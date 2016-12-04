@@ -3,6 +3,7 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
     <PreferenceScreen
         android:title="アカウント情報"
+        android:summary="IIJmioアカウントの追加と削除を行います。"
         android:key="accountSetting">
         >
     </PreferenceScreen>
