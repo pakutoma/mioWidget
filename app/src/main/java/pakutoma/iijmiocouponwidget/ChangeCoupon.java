@@ -37,7 +37,7 @@ public class ChangeCoupon extends IntentService {
         }
 
         CouponAPI coupon = new CouponAPI(accessToken);
-        CouponData cd = new CouponData(intent.getBooleanExtra("SWITCH",false));
+        CouponData cd = new CouponData(!intent.getBooleanExtra("SWITCH",false));
         try {
             coupon.changeCouponStatus(cd);
         } catch (IOException e) {

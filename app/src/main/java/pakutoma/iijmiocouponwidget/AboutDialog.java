@@ -27,7 +27,6 @@ public class AboutDialog extends DialogPreference {
 
     @Override
     protected View onCreateDialogView() {
-
         WebView webView = new WebView(this.getContext());
         webView.setWebViewClient(new WebViewClient());
         webView.loadUrl("file:///android_asset/about.html");

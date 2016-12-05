@@ -101,7 +101,7 @@ public class SwitchWidget extends AppWidgetProvider {
 
             RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.switch_widget);
             remoteViews.setTextViewText(R.id.data_traffic, widgetText);
-            isCouponEnable = intent.getBooleanExtra("COUPON",true);
+            isCouponEnable = intent.getBooleanExtra("COUPON",false);
             remoteViews.setTextViewText(R.id.coupon_switch, isCouponEnable ? "ON" : "OFF");
             ComponentName thisWidget = new ComponentName(this, SwitchWidget.class);
             AppWidgetManager manager = AppWidgetManager.getInstance(this);
