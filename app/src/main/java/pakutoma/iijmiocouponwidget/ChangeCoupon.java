@@ -55,7 +55,7 @@ public class ChangeCoupon extends IntentService {
             callbackIntent.putExtra("CHANGE",isChanged);
         }
         callbackIntent.setPackage("pakutoma.iijmiocouponwidget");
-        startService(callbackIntent);
+        sendBroadcast(callbackIntent);
     }
 
 }

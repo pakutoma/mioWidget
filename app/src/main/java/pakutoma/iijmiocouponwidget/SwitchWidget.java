@@ -14,6 +14,7 @@ import android.os.IBinder;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
+import java.security.Provider;
 import java.util.Locale;
 
 /**
@@ -25,16 +26,25 @@ public class SwitchWidget extends AppWidgetProvider {
     private static final String ACTION_GET_TRAFFIC = "pakutoma.iijmiocouponwidget.SwitchWidget.ACTION_GET_TRAFFIC";
     private static final String ACTION_SWITCH_COUPON = "pakutoma.iijmiocouponwidget.SwitchWidget.ACTION_SWITCH_COUPON";
     private static final String ACTION_CHANGE_COUPON = "pakutoma.iijmiocouponwidget.SwitchWidget.ACTION_CHANGE_COUPON";
+    private static final String ACTION_CALLBACK_GET_TRAFFIC = "pakutoma.iijmiocouponwidget.SwitchWidget.ACTION_CALLBACK_GET_TRAFFIC";
+    private static final String ACTION_CALLBACK_CHANGE_COUPON = "pakutoma.iijmiocouponwidget.SwitchWidget.ACTION_CALLBACK_CHANGE_COUPON";
 
     private static Boolean isCouponEnable = true;
 
     public void onReceive(Context context, Intent intent) {
         super.onReceive(context, intent);
-
         if (intent.getAction().equals(ACTION_GET_TRAFFIC)) {
             setAlarm(context);
             Intent getTrafficIntent = new Intent(context, GetTraffic.class);
             context.startService(getTrafficIntent);
+        }
+
+        if (intent.getAction().equals(ACTION_CALLBACK_GET_TRAFFIC)) {
+            updateTraffic(context,intent);
+        }
+
+        if (intent.getAction().equals(ACTION_CALLBACK_CHANGE_COUPON)) {
+            changeSwitch(context,intent);
         }
 
         if (intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED)) {
@@ -52,7 +62,7 @@ public class SwitchWidget extends AppWidgetProvider {
         PendingIntent operation = PendingIntent.getBroadcast(context, 0, alarmIntent, 0);
         AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         long now = System.currentTimeMillis();
-        final long interval = 1000 * 60 * 10;
+        final long interval = 1000 * 60;
         long nextAlarm = now + interval;
         am.set(AlarmManager.RTC, nextAlarm, operation);
     }
@@ -66,82 +76,62 @@ public class SwitchWidget extends AppWidgetProvider {
         context.startService(switchCouponIntent);
     }
 
-    public static class UpdateTraffic extends Service {
-        @Override
-        public int onStartCommand(Intent intent, int flags,int startId) {
-            if (!intent.getBooleanExtra("HAS_TOKEN",false)) {
-                RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.switch_widget);
-                remoteViews.setTextViewText(R.id.data_traffic, "未認証");
-                remoteViews.setTextViewText(R.id.coupon_switch, "認証");
-                ComponentName thisWidget = new ComponentName(this, SwitchWidget.class);
-                AppWidgetManager manager = AppWidgetManager.getInstance(this);
-                manager.updateAppWidget(thisWidget, remoteViews);
-                return START_STICKY;
-            }
-
-            if (!intent.getBooleanExtra(("GET"),false)) {
-                RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.switch_widget);
-                remoteViews.setTextViewText(R.id.data_traffic, "通信");
-                remoteViews.setTextViewText(R.id.coupon_switch, "エラー");
-                ComponentName thisWidget = new ComponentName(this, SwitchWidget.class);
-                AppWidgetManager manager = AppWidgetManager.getInstance(this);
-                manager.updateAppWidget(thisWidget, remoteViews);
-                return START_STICKY;
-            }
-
-            CharSequence widgetText;
-            int traffic = intent.getIntExtra("TRAFFIC",0);
-            if (traffic < 1000) {
-                widgetText = String.format(Locale.US,"%dMB",traffic);
-            } else if (traffic < 10000) {
-                widgetText = String.format(Locale.US,"%1$.2fGB",traffic / 1000.0);
-            } else {
-                widgetText = String.format(Locale.US,"%1$.1fGB",traffic / 1000.0);
-            }
-
-            RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.switch_widget);
-            remoteViews.setTextViewText(R.id.data_traffic, widgetText);
-            isCouponEnable = intent.getBooleanExtra("COUPON",false);
-            remoteViews.setTextViewText(R.id.coupon_switch, isCouponEnable ? "ON" : "OFF");
-            ComponentName thisWidget = new ComponentName(this, SwitchWidget.class);
-            AppWidgetManager manager = AppWidgetManager.getInstance(this);
+    public void updateTraffic(Context context,Intent intent) {
+        if (!intent.getBooleanExtra("HAS_TOKEN",false)) {
+            RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.switch_widget);
+            remoteViews.setTextViewText(R.id.data_traffic, "未認証");
+            remoteViews.setTextViewText(R.id.coupon_switch, "認証");
+            ComponentName thisWidget = new ComponentName(context, SwitchWidget.class);
+            AppWidgetManager manager = AppWidgetManager.getInstance(context);
             manager.updateAppWidget(thisWidget, remoteViews);
-
-            return START_STICKY;
+            return;
         }
 
-        @Override
-        public IBinder onBind(Intent intent) {
-            return null;
+        if (!intent.getBooleanExtra(("GET"),false)) {
+            RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.switch_widget);
+            remoteViews.setTextViewText(R.id.data_traffic, "通信");
+            remoteViews.setTextViewText(R.id.coupon_switch, "エラー");
+            ComponentName thisWidget = new ComponentName(context, SwitchWidget.class);
+            AppWidgetManager manager = AppWidgetManager.getInstance(context);
+            manager.updateAppWidget(thisWidget, remoteViews);
+            return;
         }
 
+        CharSequence widgetText;
+        int traffic = intent.getIntExtra("TRAFFIC",0);
+        if (traffic < 1000) {
+            widgetText = String.format(Locale.US,"%dMB",traffic);
+        } else if (traffic < 10000) {
+            widgetText = String.format(Locale.US,"%1$.2fGB",traffic / 1000.0);
+        } else {
+            widgetText = String.format(Locale.US,"%1$.1fGB",traffic / 1000.0);
+        }
+
+        RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.switch_widget);
+        remoteViews.setTextViewText(R.id.data_traffic, widgetText);
+        isCouponEnable = intent.getBooleanExtra("COUPON",false);
+        remoteViews.setTextViewText(R.id.coupon_switch, isCouponEnable ? "ON" : "OFF");
+        ComponentName thisWidget = new ComponentName(context, SwitchWidget.class);
+        AppWidgetManager manager = AppWidgetManager.getInstance(context);
+        manager.updateAppWidget(thisWidget, remoteViews);
     }
 
-    public static class ChangeSwitch extends Service {
-        @Override
-        public int onStartCommand(Intent intent, int flags,int startId) {
-            if (!intent.getBooleanExtra("HAS_TOKEN",false)) {
-                Toast.makeText(this, "認証が行われていません。", Toast.LENGTH_SHORT).show();
-                return START_STICKY;
-            }
-            if(intent.getBooleanExtra("CHANGE",false)) {
-                isCouponEnable = !isCouponEnable;
-                Toast.makeText(this,"クーポンを" + (isCouponEnable ? "ON" : "OFF") + "に変更しました。",Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(this,"切り替えに失敗しました。",Toast.LENGTH_SHORT).show();
-            }
-            RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.switch_widget);
-            remoteViews.setTextViewText(R.id.coupon_switch, isCouponEnable ? "ON" : "OFF");
-            ComponentName thisWidget = new ComponentName(this, SwitchWidget.class);
-            AppWidgetManager manager = AppWidgetManager.getInstance(this);
-            manager.updateAppWidget(thisWidget, remoteViews);
-            return START_STICKY;
+    public void changeSwitch(Context context,Intent intent) {
+        if (!intent.getBooleanExtra("HAS_TOKEN",false)) {
+            Toast.makeText(context, "認証が行われていません。", Toast.LENGTH_SHORT).show();
+            return;
         }
-
-        @Override
-        public IBinder onBind(Intent intent) {
-            return null;
+        if(intent.getBooleanExtra("CHANGE",false)) {
+            isCouponEnable = !isCouponEnable;
+            Toast.makeText(context,"クーポンを" + (isCouponEnable ? "ON" : "OFF") + "に変更しました。",Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(context,"切り替えに失敗しました。",Toast.LENGTH_SHORT).show();
         }
+        RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.switch_widget);
+        remoteViews.setTextViewText(R.id.coupon_switch, isCouponEnable ? "ON" : "OFF");
+        ComponentName thisWidget = new ComponentName(context, SwitchWidget.class);
+        AppWidgetManager manager = AppWidgetManager.getInstance(context);
+        manager.updateAppWidget(thisWidget, remoteViews);
     }
 
     public static class SwitchCoupon extends Service {

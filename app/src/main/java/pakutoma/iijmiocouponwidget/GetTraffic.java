@@ -3,6 +3,8 @@ package pakutoma.iijmiocouponwidget;
 import android.app.IntentService;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -61,6 +63,6 @@ public class GetTraffic extends IntentService {
             callbackIntent.putExtra("COUPON",isOnCoupon);
         }
         callbackIntent.setPackage("pakutoma.iijmiocouponwidget");
-        startService(callbackIntent);
+        sendBroadcast(callbackIntent);
     }
 }
