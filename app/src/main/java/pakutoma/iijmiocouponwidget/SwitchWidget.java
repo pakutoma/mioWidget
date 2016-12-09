@@ -77,43 +77,34 @@ public class SwitchWidget extends AppWidgetProvider {
     }
 
     public void updateTraffic(Context context,Intent intent) {
+        RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.switch_widget);
         if (!intent.getBooleanExtra("HAS_TOKEN",false)) {
-            RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.switch_widget);
             remoteViews.setTextViewText(R.id.data_traffic, "未認証");
             remoteViews.setTextViewText(R.id.coupon_switch, "認証");
-            ComponentName thisWidget = new ComponentName(context, SwitchWidget.class);
-            AppWidgetManager manager = AppWidgetManager.getInstance(context);
-            manager.updateAppWidget(thisWidget, remoteViews);
-            return;
-        }
-
-        if (!intent.getBooleanExtra(("GET"),false)) {
-            RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.switch_widget);
+        } else if (!intent.getBooleanExtra(("GET"),false)) {
             remoteViews.setTextViewText(R.id.data_traffic, "通信");
             remoteViews.setTextViewText(R.id.coupon_switch, "エラー");
-            ComponentName thisWidget = new ComponentName(context, SwitchWidget.class);
-            AppWidgetManager manager = AppWidgetManager.getInstance(context);
-            manager.updateAppWidget(thisWidget, remoteViews);
-            return;
-        }
-
-        CharSequence widgetText;
-        int traffic = intent.getIntExtra("TRAFFIC",0);
-        if (traffic < 1000) {
-            widgetText = String.format(Locale.US,"%dMB",traffic);
-        } else if (traffic < 10000) {
-            widgetText = String.format(Locale.US,"%1$.2fGB",traffic / 1000.0);
         } else {
-            widgetText = String.format(Locale.US,"%1$.1fGB",traffic / 1000.0);
+            int traffic = intent.getIntExtra("TRAFFIC",0);
+            remoteViews.setTextViewText(R.id.data_traffic, convertPrefixString(traffic));
+            isCouponEnable = intent.getBooleanExtra("COUPON",false);
+            remoteViews.setTextViewText(R.id.coupon_switch, isCouponEnable ? "ON" : "OFF");
         }
-
-        RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.switch_widget);
-        remoteViews.setTextViewText(R.id.data_traffic, widgetText);
-        isCouponEnable = intent.getBooleanExtra("COUPON",false);
-        remoteViews.setTextViewText(R.id.coupon_switch, isCouponEnable ? "ON" : "OFF");
         ComponentName thisWidget = new ComponentName(context, SwitchWidget.class);
         AppWidgetManager manager = AppWidgetManager.getInstance(context);
         manager.updateAppWidget(thisWidget, remoteViews);
+    }
+
+    private String convertPrefixString(int traffic) {
+        String result;
+        if (traffic < 1000) {
+            result = String.format(Locale.US,"%dMB",traffic);
+        } else if (traffic < 10000) {
+            result = String.format(Locale.US,"%1$.2fGB",traffic / 1000.0);
+        } else {
+            result = String.format(Locale.US,"%1$.1fGB",traffic / 1000.0);
+        }
+        return result;
     }
 
     public void changeSwitch(Context context,Intent intent) {
