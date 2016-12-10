@@ -12,6 +12,7 @@ import java.util.regex.Pattern;
 
 import pakutoma.iijmiocouponwidget.R;
 import pakutoma.iijmiocouponwidget.service.GetTraffic;
+import pakutoma.iijmiocouponwidget.service.InitialSetting;
 
 public class AuthActivity extends Activity {
 
@@ -33,13 +34,13 @@ public class AuthActivity extends Activity {
                     editor.putString("X-IIJmio-Authorization",token);
                     editor.putBoolean("has_token",true);
                     editor.apply();
-                    Toast.makeText(this, "認証が完了しました。", Toast.LENGTH_SHORT).show();
-                    Intent getTrafficIntent = new Intent(getApplicationContext(), GetTraffic.class);
-                    getApplicationContext().startService(getTrafficIntent);
+                    Intent initialSettingIntent = new Intent(getApplicationContext(), InitialSetting.class);
+                    getApplicationContext().startService(initialSettingIntent);
                     Intent homeIntent = new Intent(Intent.ACTION_MAIN);
                     homeIntent.addCategory(Intent.CATEGORY_HOME);
                     homeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(homeIntent);
+                    Toast.makeText(this, "認証が完了しました。", Toast.LENGTH_SHORT).show();
                 }
             }
         }

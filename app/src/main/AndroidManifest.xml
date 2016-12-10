@@ -45,6 +45,9 @@
         <service
             android:name=".service.GetTraffic"
             android:enabled="true" />
+        <service
+            android:name=".service.InitialSetting"
+            android:enabled="true" />
         <activity
             android:name=".activity.AuthActivity"
             android:launchMode="singleTask"

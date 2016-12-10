@@ -2,6 +2,8 @@ package pakutoma.iijmiocouponwidget.utility;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,6 +16,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import pakutoma.iijmiocouponwidget.exception.NotFoundValidTokenException;
 import pakutoma.iijmiocouponwidget.utility.CouponData;
@@ -24,17 +28,29 @@ import pakutoma.iijmiocouponwidget.utility.CouponData;
  */
 public class CouponAPI {
     private String accessToken;
-    private int useAccountNum;
+    private String useAccountId;
 
     public CouponAPI(Context context) throws NotFoundValidTokenException {
+        this(context,true);
+    }
+
+    public CouponAPI(Context context,boolean canSqlite) throws NotFoundValidTokenException{
         SharedPreferences preferences = context.getSharedPreferences("iijmio_token", context.MODE_PRIVATE);
         String accessToken = preferences.getString("X-IIJmio-Authorization","");
         if (accessToken.equals("")) {
             throw new NotFoundValidTokenException("Not found token in preference.");
         }
         this.accessToken = accessToken;
-        useAccountNum = 0; //仮置き
-        //TODO ここでアカウント切り替えの設定を読み込む
+        if (canSqlite) {
+            AccountDBOpenHelper helper = new AccountDBOpenHelper(context);
+            SQLiteDatabase db = helper.getReadableDatabase();
+            Cursor cursor = db.rawQuery("select * from accounttable where canSwitch = 1",null);
+            cursor.moveToFirst();
+
+            useAccountId = cursor.getString(cursor.getColumnIndex("hdoServiceCode"));
+            cursor.close();
+            db.close();
+        }
     }
 
     public CouponData getCouponData() throws IOException , NotFoundValidTokenException {
@@ -42,13 +58,39 @@ public class CouponAPI {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode statusNode = mapper.readTree(couponStatus);
 
-        boolean isOnCoupon = statusNode.get("couponInfo").get(0).get("hdoInfo").get(0).get("couponUse").asBoolean();
+        boolean isOnCoupon = false;
+        for (JsonNode hddServiceNode : statusNode.get("couponInfo")) {
+            for (JsonNode hdoServiceNode : hddServiceNode.get("hdoInfo")) {
+                String hdoServiceCode = hdoServiceNode.get("hdoServiceCode").asText();
+                if (hdoServiceCode.equals(useAccountId)) {
+                    isOnCoupon = hdoServiceNode.get("couponUse").asBoolean();
+                }
+            }
+        }
         int traffic = sumTraffic(statusNode);
         return new CouponData(traffic,isOnCoupon);
     }
 
+    public List<AccountData> getAccountsData() throws IOException,NotFoundValidTokenException{
+        String couponStatus = getCouponStatus();
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode statusNode = mapper.readTree(couponStatus);
+        List<AccountData> accountDataList = new ArrayList<>();
+        for (JsonNode hddServiceNode : statusNode.get("couponInfo")) {
+            for (JsonNode hdoServiceNode : hddServiceNode.get("hdoInfo")) {
+                String hdoServiceCode = hdoServiceNode.get("hdoServiceCode").asText();
+                String number = hdoServiceNode.get("number").asText();
+                boolean regulation = hdoServiceNode.get("regulation").asBoolean();
+                boolean couponUse = hdoServiceNode.get("couponUse").asBoolean();
+                AccountData ad = new AccountData(hdoServiceCode,number,regulation,couponUse);
+                accountDataList.add(ad);
+            }
+        }
+
+        return accountDataList;
+    }
+
     public void changeCouponStatus(CouponData cd) throws IOException , NotFoundValidTokenException {
-        //TODO 自前でJSONを組み立てる
         String couponStatus = getCouponStatus();
         ObjectMapper mapper = new ObjectMapper();
         JsonNode getNode = mapper.readTree(couponStatus);
@@ -56,8 +98,9 @@ public class CouponAPI {
         ArrayNode hdoNode = putNode.putArray("couponInfo").addObject().putArray("hdoInfo");
         for (JsonNode item : getNode.get("couponInfo").get(0).get("hdoInfo")) {
             ObjectNode sim = hdoNode.addObject();
-            sim.put("hdoServiceCode",item.get("hdoServiceCode").asText());
-            sim.put("couponUse",cd.getSwitch());
+            String hdoServiceCode = item.get("hdoServiceCode").asText();
+            sim.put("hdoServiceCode",hdoServiceCode);
+            sim.put("couponUse",hdoServiceCode.equals(useAccountId) ? cd.getSwitch() : item.get("couponUse").asBoolean());
         }
         putCouponStatus(putNode);
     }
