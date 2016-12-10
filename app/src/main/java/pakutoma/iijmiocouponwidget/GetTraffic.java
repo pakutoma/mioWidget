@@ -25,22 +25,20 @@ public class GetTraffic extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        SharedPreferences preferences = getSharedPreferences("iijmio_token", MODE_PRIVATE);
-        String accessToken = preferences.getString("X-IIJmio-Authorization","");
-        if (accessToken.equals("")) {
-            SharedPreferences.Editor editor = preferences.edit();
-            editor.putBoolean("has_token",false);
-            editor.apply();
-
-            sendCallback(false,false,-1,false);
-            return;
-        }
-
-        CouponAPI coupon = new CouponAPI(accessToken);
+        CouponAPI coupon;
         CouponData cd;
         try {
+            coupon = new CouponAPI(getApplicationContext());
             cd = coupon.getCouponData();
-        } catch (Exception e) {
+        } catch (NotFoundValidTokenException e) {
+            SharedPreferences preferences = getSharedPreferences("iijmio_token", MODE_PRIVATE);
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putString("X-IIJmio-Authorization","");
+            editor.putBoolean("has_token",false);
+            editor.apply();
+            sendCallback(false,false,-1,false);
+            return;
+        } catch (IOException e) {
             sendCallback(true,false,-1,false);
             return;
         }

@@ -1,5 +1,8 @@
 package pakutoma.iijmiocouponwidget;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -13,20 +16,25 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 /**
- * CouponAPI can access iijmio api.
+ * CouponAPI access iijmio api.
  * Created by PAKUTOMA on 2016/09/29.
  */
 public class CouponAPI {
     private String accessToken;
     private int useAccountNum;
 
-    public CouponAPI(String token) {
-        this.accessToken = token;
+    public CouponAPI(Context context) throws NotFoundValidTokenException{
+        SharedPreferences preferences = context.getSharedPreferences("iijmio_token", context.MODE_PRIVATE);
+        String accessToken = preferences.getString("X-IIJmio-Authorization","");
+        if (accessToken.equals("")) {
+            throw new NotFoundValidTokenException("Not found token in preference.");
+        }
+        this.accessToken = accessToken;
         useAccountNum = 0; //仮置き
         //TODO ここでアカウント切り替えの設定を読み込む
     }
 
-    public CouponData getCouponData() throws IOException {
+    public CouponData getCouponData() throws IOException , NotFoundValidTokenException {
         String couponStatus = getCouponStatus();
         ObjectMapper mapper = new ObjectMapper();
         JsonNode statusNode = mapper.readTree(couponStatus);
@@ -36,7 +44,8 @@ public class CouponAPI {
         return new CouponData(traffic,isOnCoupon);
     }
 
-    public void changeCouponStatus(CouponData cd) throws IOException {
+    public void changeCouponStatus(CouponData cd) throws IOException , NotFoundValidTokenException {
+        //TODO 自前でJSONを組み立てる
         String couponStatus = getCouponStatus();
         ObjectMapper mapper = new ObjectMapper();
         JsonNode getNode = mapper.readTree(couponStatus);
@@ -63,7 +72,7 @@ public class CouponAPI {
         return traffic;
     }
 
-    private String getCouponStatus() throws IOException {
+    private String getCouponStatus() throws IOException , NotFoundValidTokenException{
         StringBuilder sb = new StringBuilder();
         URL url = new URL("https://api.iijmio.jp/mobile/d/v1/coupon/");
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -72,18 +81,11 @@ public class CouponAPI {
         connection.setRequestProperty("X-IIJmio-Developer", "IilCI1xrAgqKrXV9Zt4");
         connection.setRequestProperty("X-IIJmio-Authorization", accessToken);
         connection.connect();
-        BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream(),"UTF-8"));
-        String line;
-        while ((line = br.readLine()) != null) {
-            sb.append(line);
-        }
-        br.close();
-        connection.disconnect();
-        return sb.toString();
+        return readStream(connection);
     }
 
-    private String putCouponStatus(ObjectNode sendJson) throws IOException {
-        StringBuilder sb = new StringBuilder();
+    private String putCouponStatus(ObjectNode sendJson) throws IOException , NotFoundValidTokenException{
+
         URL url = new URL("https://api.iijmio.jp/mobile/d/v1/coupon/");
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("PUT");
@@ -96,13 +98,36 @@ public class CouponAPI {
         OutputStream os = connection.getOutputStream();
         ObjectMapper mapper = new ObjectMapper();
         mapper.writeValue(os,sendJson);
-        BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream(),"UTF-8"));
-        String line;
-        while ((line = br.readLine()) != null) {
-            sb.append(line);
+        return readStream(connection);
+    }
+
+    private String readStream(HttpURLConnection connection) throws IOException , NotFoundValidTokenException {
+        StringBuilder sb = new StringBuilder();
+        if (connection.getResponseCode() / 100 == 4 || connection.getResponseCode() / 100 == 5)
+        {
+            BufferedReader br = new BufferedReader(new InputStreamReader(connection.getErrorStream(), "UTF-8"));
+            String line;
+            while ((line = br.readLine()) != null) {
+                sb.append(line);
+            }
+            br.close();
+            connection.disconnect();
+            if (sb.toString().indexOf("User Authorization Failure") != -1) {
+                throw new NotFoundValidTokenException("User Authorization Failure");
+            } else {
+                throw new IOException();
+            }
+        } else {
+            BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream(), "UTF-8"));
+            String line;
+            while ((line = br.readLine()) != null) {
+                sb.append(line);
+            }
+            br.close();
+            connection.disconnect();
+            return sb.toString();
         }
-        br.close();
-        connection.disconnect();
-        return sb.toString();
     }
 }
+
+

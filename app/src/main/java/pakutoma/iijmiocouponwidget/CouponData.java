@@ -11,11 +11,6 @@ public class CouponData {
         this.sw = sw;
     }
 
-    public CouponData(boolean sw) {
-        this.sw = sw;
-        this.traffic = 0;
-    }
-
     public int getTraffic() {
         return this.traffic;
     }

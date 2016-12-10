@@ -26,24 +26,20 @@ public class ChangeCoupon extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        SharedPreferences preferences = getSharedPreferences("iijmio_token", MODE_PRIVATE);
-        String accessToken = preferences.getString("X-IIJmio-Authorization","");
-        if (accessToken.equals("")) {
-            SharedPreferences.Editor editor = preferences.edit();
-            editor.putBoolean("has_token",false);
-            editor.apply();
-
-            sendCallback(false,false);
-            return;
-        }
-
-        CouponAPI coupon = new CouponAPI(accessToken);
         try {
+            CouponAPI coupon = new CouponAPI(getApplicationContext());
             CouponData cd = coupon.getCouponData();
             cd.setSwitch(!cd.getSwitch());
             coupon.changeCouponStatus(cd);
-        } catch (IOException e) {
-            sendCallback(true,false);
+        } catch (NotFoundValidTokenException e) {
+            SharedPreferences preferences = getSharedPreferences("iijmio_token", MODE_PRIVATE);
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putString("X-IIJmio-Authorization","");
+            editor.putBoolean("has_token",false);
+            editor.apply();
+            sendCallback(false,false);
+        } catch (Exception e) {
+            sendCallback(true, false);
             return;
         }
 
