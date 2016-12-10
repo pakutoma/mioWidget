@@ -3,6 +3,7 @@ package pakutoma.iijmiocouponwidget;
 import android.app.IntentService;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -37,8 +38,9 @@ public class ChangeCoupon extends IntentService {
         }
 
         CouponAPI coupon = new CouponAPI(accessToken);
-        CouponData cd = new CouponData(!intent.getBooleanExtra("SWITCH",false));
         try {
+            CouponData cd = coupon.getCouponData();
+            cd.setSwitch(!cd.getSwitch());
             coupon.changeCouponStatus(cd);
         } catch (IOException e) {
             sendCallback(true,false);

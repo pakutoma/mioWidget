@@ -27,7 +27,7 @@
         </receiver>
 
         <service
-            android:name=".SwitchWidget$SwitchCoupon"
+            android:name=".SwitchCoupon"
             android:enabled="true"
             android:exported="false">
             <intent-filter>
