@@ -62,9 +62,17 @@ public class SwitchWidget extends AppWidgetProvider {
         PendingIntent operation = PendingIntent.getBroadcast(context, 0, alarmIntent, 0);
         AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         long now = System.currentTimeMillis();
-        final long interval = 1000 * 60;
+        final long interval = 1000 * 60 * 10;
         long nextAlarm = now + interval;
         am.set(AlarmManager.RTC, nextAlarm, operation);
+    }
+
+    private void cancelAlarm(Context context) {
+        Intent alarmIntent = new Intent(context, SwitchWidget.class);
+        alarmIntent.setAction(ACTION_GET_TRAFFIC);
+        PendingIntent operation = PendingIntent.getBroadcast(context, 0, alarmIntent, 0);
+        AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        am.cancel(operation);
     }
 
     @Override
@@ -133,7 +141,8 @@ public class SwitchWidget extends AppWidgetProvider {
 
     @Override
     public void onDisabled(Context context) {
-        // Enter relevant functionality for when the last widget is disabled
+        cancelAlarm(context);
+        super.onDisabled(context);
     }
 }
 
