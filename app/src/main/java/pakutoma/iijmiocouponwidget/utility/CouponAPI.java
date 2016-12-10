@@ -90,19 +90,27 @@ public class CouponAPI {
         return accountDataList;
     }
 
-    public void changeCouponStatus(CouponData cd) throws IOException , NotFoundValidTokenException {
+    public boolean changeCouponStatus() throws IOException , NotFoundValidTokenException {
         String couponStatus = getCouponStatus();
         ObjectMapper mapper = new ObjectMapper();
         JsonNode getNode = mapper.readTree(couponStatus);
         ObjectNode putNode = mapper.createObjectNode();
         ArrayNode hdoNode = putNode.putArray("couponInfo").addObject().putArray("hdoInfo");
+        boolean nowStatus = false;
         for (JsonNode item : getNode.get("couponInfo").get(0).get("hdoInfo")) {
             ObjectNode sim = hdoNode.addObject();
             String hdoServiceCode = item.get("hdoServiceCode").asText();
             sim.put("hdoServiceCode",hdoServiceCode);
-            sim.put("couponUse",hdoServiceCode.equals(useAccountId) ? cd.getSwitch() : item.get("couponUse").asBoolean());
+            if (hdoServiceCode.equals(useAccountId))
+            {
+                nowStatus = !item.get("couponUse").asBoolean();
+                sim.put("couponUse",nowStatus);
+            } else {
+                sim.put("couponUse",item.get("couponUse").asBoolean());
+            }
         }
         putCouponStatus(putNode);
+        return nowStatus;
     }
 
     private int sumTraffic (JsonNode statusNode) {

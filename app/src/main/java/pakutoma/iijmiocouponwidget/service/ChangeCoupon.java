@@ -24,29 +24,28 @@ public class ChangeCoupon extends IntentService {
     protected void onHandleIntent(Intent intent) {
         try {
             CouponAPI coupon = new CouponAPI(getApplicationContext());
-            CouponData cd = coupon.getCouponData();
-            cd.setSwitch(!cd.getSwitch());
-            coupon.changeCouponStatus(cd);
+            boolean changedSwitch = coupon.changeCouponStatus();
+            sendCallback(true,true,changedSwitch);
         } catch (NotFoundValidTokenException e) {
             SharedPreferences preferences = getSharedPreferences("iijmio_token", MODE_PRIVATE);
             SharedPreferences.Editor editor = preferences.edit();
             editor.putString("X-IIJmio-Authorization","");
             editor.putBoolean("has_token",false);
             editor.apply();
-            sendCallback(false,false);
+            sendCallback(false,false,false);
         } catch (Exception e) {
-            sendCallback(true, false);
-            return;
+            sendCallback(true, false,false);
         }
-
-        sendCallback(true,true);
     }
 
-    private void sendCallback(boolean hasToken,boolean isChanged) {
+    private void sendCallback(boolean hasToken,boolean isChanged,boolean nowSwitch) {
         Intent callbackIntent = new Intent(ACTION_CALLBACK_CHANGE_COUPON);
         callbackIntent.putExtra("HAS_TOKEN",hasToken);
         if(hasToken) {
             callbackIntent.putExtra("CHANGE",isChanged);
+        }
+        if (isChanged) {
+            callbackIntent.putExtra("NOW_SWITCH",nowSwitch);
         }
         callbackIntent.setPackage("pakutoma.iijmiocouponwidget");
         sendBroadcast(callbackIntent);

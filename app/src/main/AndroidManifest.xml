@@ -17,6 +17,7 @@
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
                 <action android:name="pakutoma.iijmiocouponwidget.widget.SwitchWidget.ACTION_CALLBACK_GET_TRAFFIC" />
                 <action android:name="pakutoma.iijmiocouponwidget.widget.SwitchWidget.ACTION_CALLBACK_CHANGE_COUPON" />
             </intent-filter>
@@ -63,11 +64,19 @@
                     android:scheme="pakutoma.iijmiocouponwidget" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.MainSettingsActivity">
+        <activity android:name=".activity.MainSettingsActivity"
+            android:label="Switch設定">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".activity.AccountSwitchActivity"
+            android:label="アカウント切替">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
     </application>

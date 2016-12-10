@@ -45,12 +45,11 @@ public class SwitchWidget extends AppWidgetProvider {
             changeSwitch(context,intent);
         }
 
-        if (intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED)) {
+        if (intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED) || intent.getAction().equals(Intent.ACTION_MY_PACKAGE_REPLACED)) {
             setAlarm(context);
             Intent getTrafficIntent = new Intent(context, GetTraffic.class);
             context.startService(getTrafficIntent);
             Intent switchCouponIntent = new Intent(context, SwitchCoupon.class);
-            switchCouponIntent.putExtra("IS_COUPON_ENABLE",isCouponEnable);
             context.startService(switchCouponIntent);
         }
     }
@@ -61,7 +60,7 @@ public class SwitchWidget extends AppWidgetProvider {
         PendingIntent operation = PendingIntent.getBroadcast(context, 0, alarmIntent, 0);
         AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         long now = System.currentTimeMillis();
-        final long interval = 1000 * 60 * 10;
+        final long interval = 1000 * 60 * 5;
         long nextAlarm = now + interval;
         am.set(AlarmManager.RTC, nextAlarm, operation);
     }
@@ -80,7 +79,6 @@ public class SwitchWidget extends AppWidgetProvider {
         Intent getTrafficIntent = new Intent(context, GetTraffic.class);
         context.startService(getTrafficIntent);
         Intent switchCouponIntent = new Intent(context, SwitchCoupon.class);
-        switchCouponIntent.putExtra("IS_COUPON_ENABLE",isCouponEnable);
         context.startService(switchCouponIntent);
     }
 
@@ -121,7 +119,7 @@ public class SwitchWidget extends AppWidgetProvider {
             return;
         }
         if(intent.getBooleanExtra("CHANGE",false)) {
-            isCouponEnable = !isCouponEnable;
+            isCouponEnable = intent.getBooleanExtra("NOW_SWITCH",false);
             Toast.makeText(context,"クーポンを" + (isCouponEnable ? "ON" : "OFF") + "に変更しました。",Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(context,"切り替えに失敗しました。",Toast.LENGTH_SHORT).show();
