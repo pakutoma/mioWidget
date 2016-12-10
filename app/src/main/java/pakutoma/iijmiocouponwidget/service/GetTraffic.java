@@ -1,15 +1,14 @@
-package pakutoma.iijmiocouponwidget;
+package pakutoma.iijmiocouponwidget.service;
 
 import android.app.IntentService;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.util.Log;
-import android.widget.Toast;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
+
+import pakutoma.iijmiocouponwidget.utility.CouponAPI;
+import pakutoma.iijmiocouponwidget.utility.CouponData;
+import pakutoma.iijmiocouponwidget.exception.NotFoundValidTokenException;
 
 
 /**
@@ -17,7 +16,7 @@ import java.io.IOException;
  * Get Traffic Function
  */
 public class GetTraffic extends IntentService {
-    private static final String ACTION_CALLBACK_GET_TRAFFIC = "pakutoma.iijmiocouponwidget.SwitchWidget.ACTION_CALLBACK_GET_TRAFFIC";
+    private static final String ACTION_CALLBACK_GET_TRAFFIC = "pakutoma.iijmiocouponwidget.widget.SwitchWidget.ACTION_CALLBACK_GET_TRAFFIC";
 
     public GetTraffic() {
         super("GetTraffic");

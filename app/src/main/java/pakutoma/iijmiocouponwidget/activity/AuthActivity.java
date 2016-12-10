@@ -1,15 +1,17 @@
-package pakutoma.iijmiocouponwidget;
+package pakutoma.iijmiocouponwidget.activity;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.Toast;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import pakutoma.iijmiocouponwidget.R;
+import pakutoma.iijmiocouponwidget.service.GetTraffic;
 
 public class AuthActivity extends Activity {
 

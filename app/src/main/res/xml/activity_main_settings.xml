@@ -10,10 +10,10 @@
     <PreferenceScreen
         android:title="設定"
         android:key="preference" />
-    <pakutoma.iijmiocouponwidget.AboutDialog
+    <pakutoma.iijmiocouponwidget.activity.AboutDialog
         android:title="このアプリについて"
         android:key="about" />
-    <pakutoma.iijmiocouponwidget.LicenseDialog
+    <pakutoma.iijmiocouponwidget.activity.LicenseDialog
         android:title="オープンソースライセンス"
         android:key="openSourceLicense" />
 </PreferenceScreen>

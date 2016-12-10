@@ -1,4 +1,4 @@
-package pakutoma.iijmiocouponwidget;
+package pakutoma.iijmiocouponwidget.service;
 
 import android.app.PendingIntent;
 import android.app.Service;
@@ -8,15 +8,17 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.IBinder;
-import android.util.Log;
 import android.widget.RemoteViews;
+
+import pakutoma.iijmiocouponwidget.R;
+import pakutoma.iijmiocouponwidget.widget.SwitchWidget;
 
 /**
  * Created by PAKUTOMA on 2016/12/10.
  */
 public class SwitchCoupon extends Service {
-    private static final String ACTION_SWITCH_COUPON = "pakutoma.iijmiocouponwidget.SwitchWidget.ACTION_SWITCH_COUPON";
-    private static final String ACTION_CHANGE_COUPON = "pakutoma.iijmiocouponwidget.SwitchWidget.ACTION_CHANGE_COUPON";
+    private static final String ACTION_SWITCH_COUPON = "pakutoma.iijmiocouponwidget.widget.SwitchWidget.ACTION_SWITCH_COUPON";
+    private static final String ACTION_CHANGE_COUPON = "pakutoma.iijmiocouponwidget.widget.SwitchWidget.ACTION_CHANGE_COUPON";
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {

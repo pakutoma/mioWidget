@@ -12,13 +12,13 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <receiver
-            android:name=".SwitchWidget"
+            android:name=".widget.SwitchWidget"
             android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
-                <action android:name="pakutoma.iijmiocouponwidget.SwitchWidget.ACTION_CALLBACK_GET_TRAFFIC" />
-                <action android:name="pakutoma.iijmiocouponwidget.SwitchWidget.ACTION_CALLBACK_CHANGE_COUPON" />
+                <action android:name="pakutoma.iijmiocouponwidget.widget.SwitchWidget.ACTION_CALLBACK_GET_TRAFFIC" />
+                <action android:name="pakutoma.iijmiocouponwidget.widget.SwitchWidget.ACTION_CALLBACK_CHANGE_COUPON" />
             </intent-filter>
 
             <meta-data
@@ -27,26 +27,26 @@
         </receiver>
 
         <service
-            android:name=".SwitchCoupon"
+            android:name=".service.SwitchCoupon"
             android:enabled="true"
             android:exported="false">
             <intent-filter>
-                <action android:name="pakutoma.iijmiocouponwidget.SwitchWidget.ACTION_SWITCH_COUPON" />
+                <action android:name="pakutoma.iijmiocouponwidget.widget.SwitchWidget.ACTION_SWITCH_COUPON" />
             </intent-filter>
         </service>
         <service
-            android:name=".ChangeCoupon"
+            android:name=".service.ChangeCoupon"
             android:enabled="true"
             android:exported="false">
             <intent-filter>
-                <action android:name="pakutoma.iijmiocouponwidget.SwitchWidget.ACTION_CHANGE_COUPON" />
+                <action android:name="pakutoma.iijmiocouponwidget.widget.SwitchWidget.ACTION_CHANGE_COUPON" />
             </intent-filter>
         </service>
         <service
-            android:name=".GetTraffic"
+            android:name=".service.GetTraffic"
             android:enabled="true" />
         <activity
-            android:name=".AuthActivity"
+            android:name=".activity.AuthActivity"
             android:launchMode="singleTask"
             android:theme="@android:style/Theme.Translucent.NoTitleBar">
             <intent-filter>
@@ -60,7 +60,7 @@
                     android:scheme="pakutoma.iijmiocouponwidget" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainSettingsActivity">
+        <activity android:name=".activity.MainSettingsActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

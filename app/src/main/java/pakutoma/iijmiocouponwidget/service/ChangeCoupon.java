@@ -1,16 +1,12 @@
-package pakutoma.iijmiocouponwidget;
+package pakutoma.iijmiocouponwidget.service;
 
 import android.app.IntentService;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.util.Log;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
-import java.io.IOException;
+import pakutoma.iijmiocouponwidget.utility.CouponAPI;
+import pakutoma.iijmiocouponwidget.utility.CouponData;
+import pakutoma.iijmiocouponwidget.exception.NotFoundValidTokenException;
 
 
 /**
@@ -18,7 +14,7 @@ import java.io.IOException;
  * Created by PAKUTOMA on 2016/06/21.
  */
 public class ChangeCoupon extends IntentService {
-    private static final String ACTION_CALLBACK_CHANGE_COUPON = "pakutoma.iijmiocouponwidget.SwitchWidget.ACTION_CALLBACK_CHANGE_COUPON";
+    private static final String ACTION_CALLBACK_CHANGE_COUPON = "pakutoma.iijmiocouponwidget.widget.SwitchWidget.ACTION_CALLBACK_CHANGE_COUPON";
 
     public ChangeCoupon() {
         super("ChangeCoupon");

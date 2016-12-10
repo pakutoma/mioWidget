@@ -1,4 +1,4 @@
-package pakutoma.iijmiocouponwidget;
+package pakutoma.iijmiocouponwidget.activity;
 
 import android.preference.PreferenceFragment;
 import android.support.v7.app.AppCompatActivity;

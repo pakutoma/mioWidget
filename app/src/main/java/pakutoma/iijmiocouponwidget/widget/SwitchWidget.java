@@ -1,21 +1,20 @@
-package pakutoma.iijmiocouponwidget;
+package pakutoma.iijmiocouponwidget.widget;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
-import android.app.Service;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.net.Uri;
-import android.os.IBinder;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
-import java.security.Provider;
 import java.util.Locale;
+
+import pakutoma.iijmiocouponwidget.R;
+import pakutoma.iijmiocouponwidget.service.GetTraffic;
+import pakutoma.iijmiocouponwidget.service.SwitchCoupon;
 
 /**
  * Implementation of App Widget functionality.
@@ -23,10 +22,10 @@ import java.util.Locale;
 public class SwitchWidget extends AppWidgetProvider {
 
 
-    private static final String ACTION_GET_TRAFFIC = "pakutoma.iijmiocouponwidget.SwitchWidget.ACTION_GET_TRAFFIC";
+    private static final String ACTION_GET_TRAFFIC = "pakutoma.iijmiocouponwidget.widget.SwitchWidget.ACTION_GET_TRAFFIC";
 
-    private static final String ACTION_CALLBACK_GET_TRAFFIC = "pakutoma.iijmiocouponwidget.SwitchWidget.ACTION_CALLBACK_GET_TRAFFIC";
-    private static final String ACTION_CALLBACK_CHANGE_COUPON = "pakutoma.iijmiocouponwidget.SwitchWidget.ACTION_CALLBACK_CHANGE_COUPON";
+    private static final String ACTION_CALLBACK_GET_TRAFFIC = "pakutoma.iijmiocouponwidget.widget.SwitchWidget.ACTION_CALLBACK_GET_TRAFFIC";
+    private static final String ACTION_CALLBACK_CHANGE_COUPON = "pakutoma.iijmiocouponwidget.widget.SwitchWidget.ACTION_CALLBACK_CHANGE_COUPON";
 
     private static Boolean isCouponEnable = true;
 

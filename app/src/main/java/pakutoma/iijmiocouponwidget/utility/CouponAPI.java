@@ -1,4 +1,4 @@
-package pakutoma.iijmiocouponwidget;
+package pakutoma.iijmiocouponwidget.utility;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -15,6 +15,9 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import pakutoma.iijmiocouponwidget.exception.NotFoundValidTokenException;
+import pakutoma.iijmiocouponwidget.utility.CouponData;
+
 /**
  * CouponAPI access iijmio api.
  * Created by PAKUTOMA on 2016/09/29.
@@ -23,7 +26,7 @@ public class CouponAPI {
     private String accessToken;
     private int useAccountNum;
 
-    public CouponAPI(Context context) throws NotFoundValidTokenException{
+    public CouponAPI(Context context) throws NotFoundValidTokenException {
         SharedPreferences preferences = context.getSharedPreferences("iijmio_token", context.MODE_PRIVATE);
         String accessToken = preferences.getString("X-IIJmio-Authorization","");
         if (accessToken.equals("")) {
