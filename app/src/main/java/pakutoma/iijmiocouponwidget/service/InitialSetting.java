@@ -53,6 +53,7 @@ public class InitialSetting extends IntentService{
             editor.putBoolean("has_token",false);
             editor.apply();
         } catch (IOException e) {
+            return;
         }
     }
 }

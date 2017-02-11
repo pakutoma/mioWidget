@@ -59,9 +59,8 @@ public class SwitchWidget extends AppWidgetProvider {
         alarmIntent.setAction(ACTION_GET_TRAFFIC);
         PendingIntent operation = PendingIntent.getBroadcast(context, 0, alarmIntent, 0);
         AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        long now = System.currentTimeMillis();
         final long interval = 1000 * 60 * 5;
-        long nextAlarm = now + interval;
+        final long nextAlarm = System.currentTimeMillis() + interval;
         am.set(AlarmManager.RTC, nextAlarm, operation);
     }
 
