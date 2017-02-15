@@ -26,7 +26,7 @@ public class SwitchCoupon extends Service {
         AppWidgetManager manager = AppWidgetManager.getInstance(this);
         RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.switch_widget);
 
-        if (intent.getAction() != null && ACTION_SWITCH_COUPON.equals(intent.getAction())) {
+        if (intent != null && ACTION_SWITCH_COUPON.equals(intent.getAction())) {
             SharedPreferences preferences = getSharedPreferences("iijmio_token", MODE_PRIVATE);
             if (!preferences.getBoolean("has_token",false)) {
                 Uri.Builder builder = new Uri.Builder();
