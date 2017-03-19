@@ -1,9 +1,10 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/widget_style"
     android:padding="@dimen/widget_margin"
-    android:clickable="false">
+    android:clickable="false"
+    android:orientation="vertical">
 
     <TextView
         android:id="@+id/data_traffic"
@@ -16,20 +17,62 @@
         android:textStyle="normal"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp" />
+        android:layout_marginTop="12dp"
+        android:layout_gravity="center_horizontal"/>
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/coupon_switch"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/data_traffic"
-        android:background="@drawable/button_style"
-        android:text="@string/switch_text" />
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical">
 
-</RelativeLayout>
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:id="@+id/coupon_switch_base"
+            android:elevation="0dp"
+            android:background="@drawable/circle_switch_base"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="6dp"
+            android:layout_gravity="center"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="20dp"
+            android:id="@+id/coupon_switch_base_on"
+            android:elevation="0dp"
+            android:background="@drawable/circle_switch_base_on"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="6dp"
+            android:layout_gravity="center"
+            android:visibility="invisible"/>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:layout_gravity="center_vertical">
+            <Button
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:id="@+id/coupon_switch_top"
+                android:elevation="5dp"
+                android:background="@drawable/circle_switch_top"
+                android:layout_marginLeft="6dp"
+                android:layout_marginRight="6dp"
+                android:layout_gravity="start" />
+
+            <Button
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:id="@+id/coupon_switch_top_on"
+                android:elevation="5dp"
+                android:background="@drawable/circle_switch_top_on"
+                android:layout_marginLeft="6dp"
+                android:layout_marginRight="6dp"
+                android:layout_gravity="end"
+                android:visibility="invisible"/>
+        </FrameLayout>
+
+    </FrameLayout>
+
+
+</LinearLayout>

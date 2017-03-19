@@ -48,7 +48,10 @@ public class SwitchCoupon extends Service {
         Intent clickIntent = new Intent();
         clickIntent.setAction(ACTION_SWITCH_COUPON);
         PendingIntent pendingIntent = PendingIntent.getService(this, 0, clickIntent, 0);
-        remoteViews.setOnClickPendingIntent(R.id.coupon_switch, pendingIntent);
+        remoteViews.setOnClickPendingIntent(R.id.coupon_switch_top, pendingIntent);
+        remoteViews.setOnClickPendingIntent(R.id.coupon_switch_base, pendingIntent);
+        remoteViews.setOnClickPendingIntent(R.id.coupon_switch_top_on, pendingIntent);
+        remoteViews.setOnClickPendingIntent(R.id.coupon_switch_base_on, pendingIntent);
         manager.updateAppWidget(thisWidget, remoteViews);
         return START_STICKY;
     }

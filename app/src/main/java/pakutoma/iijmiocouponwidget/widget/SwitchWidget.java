@@ -7,6 +7,9 @@ import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.transition.Visibility;
+import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
@@ -85,15 +88,13 @@ public class SwitchWidget extends AppWidgetProvider {
         RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.switch_widget);
         if (!intent.getBooleanExtra("HAS_TOKEN",false)) {
             remoteViews.setTextViewText(R.id.data_traffic, "未認証");
-            remoteViews.setTextViewText(R.id.coupon_switch, "認証");
         } else if (!intent.getBooleanExtra(("GET"),false)) {
-            remoteViews.setTextViewText(R.id.data_traffic, "通信");
-            remoteViews.setTextViewText(R.id.coupon_switch, "エラー");
+            remoteViews.setTextViewText(R.id.data_traffic, "エラー");
         } else {
             int traffic = intent.getIntExtra("TRAFFIC",0);
             remoteViews.setTextViewText(R.id.data_traffic, convertPrefixString(traffic));
             isCouponEnable = intent.getBooleanExtra("COUPON",false);
-            remoteViews.setTextViewText(R.id.coupon_switch, isCouponEnable ? "ON" : "OFF");
+            changeSwitchMode(remoteViews,isCouponEnable);
         }
         ComponentName thisWidget = new ComponentName(context, SwitchWidget.class);
         AppWidgetManager manager = AppWidgetManager.getInstance(context);
@@ -124,10 +125,19 @@ public class SwitchWidget extends AppWidgetProvider {
             Toast.makeText(context,"切り替えに失敗しました。",Toast.LENGTH_SHORT).show();
         }
         RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.switch_widget);
-        remoteViews.setTextViewText(R.id.coupon_switch, isCouponEnable ? "ON" : "OFF");
+        changeSwitchMode(remoteViews,isCouponEnable);
+
         ComponentName thisWidget = new ComponentName(context, SwitchWidget.class);
         AppWidgetManager manager = AppWidgetManager.getInstance(context);
         manager.updateAppWidget(thisWidget, remoteViews);
+    }
+
+    private void changeSwitchMode(RemoteViews remoteViews,Boolean isCouponEnable) {
+        remoteViews.setViewVisibility(R.id.coupon_switch_base_on, isCouponEnable ? View.VISIBLE : View.INVISIBLE);
+        remoteViews.setViewVisibility(R.id.coupon_switch_base, isCouponEnable ? View.INVISIBLE : View.VISIBLE);
+        remoteViews.setViewVisibility(R.id.coupon_switch_top_on, isCouponEnable ? View.VISIBLE : View.INVISIBLE);
+        remoteViews.setViewVisibility(R.id.coupon_switch_top, isCouponEnable ? View.INVISIBLE : View.VISIBLE);
+
     }
 
     @Override
