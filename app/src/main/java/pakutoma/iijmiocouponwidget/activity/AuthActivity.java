@@ -3,14 +3,11 @@ package pakutoma.iijmiocouponwidget.activity;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
-import android.appwidget.AppWidgetManager;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
-import android.widget.RemoteViews;
 import android.widget.Toast;
 
 import java.util.regex.Matcher;
@@ -18,7 +15,6 @@ import java.util.regex.Pattern;
 
 import pakutoma.iijmiocouponwidget.R;
 import pakutoma.iijmiocouponwidget.service.GetTraffic;
-import pakutoma.iijmiocouponwidget.service.SwitchCoupon;
 import pakutoma.iijmiocouponwidget.widget.SwitchWidget;
 
 public class AuthActivity extends Activity {

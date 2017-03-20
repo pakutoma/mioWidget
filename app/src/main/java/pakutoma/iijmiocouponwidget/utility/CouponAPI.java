@@ -2,11 +2,6 @@ package pakutoma.iijmiocouponwidget.utility;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.os.Debug;
-import android.util.Log;
-import android.widget.Toast;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -19,11 +14,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 
 import pakutoma.iijmiocouponwidget.exception.NotFoundValidTokenException;
-import pakutoma.iijmiocouponwidget.utility.CouponData;
 
 /**
  * CouponAPI access iijmio api.

@@ -7,7 +7,6 @@ import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.Toast;
@@ -15,10 +14,8 @@ import android.widget.Toast;
 import java.util.Locale;
 
 import pakutoma.iijmiocouponwidget.R;
-import pakutoma.iijmiocouponwidget.exception.NotFoundValidTokenException;
 import pakutoma.iijmiocouponwidget.service.GetTraffic;
 import pakutoma.iijmiocouponwidget.service.SwitchCoupon;
-import pakutoma.iijmiocouponwidget.utility.CouponAPI;
 
 /**
  * Implementation of App Widget functionality.

@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -14,7 +13,6 @@ import android.widget.Toast;
 
 import pakutoma.iijmiocouponwidget.R;
 import pakutoma.iijmiocouponwidget.exception.NotFoundValidTokenException;
-import pakutoma.iijmiocouponwidget.service.SwitchCoupon;
 import pakutoma.iijmiocouponwidget.utility.CouponAPI;
 import pakutoma.iijmiocouponwidget.widget.SwitchWidget;
 
