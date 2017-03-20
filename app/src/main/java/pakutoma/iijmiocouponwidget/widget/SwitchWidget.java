@@ -7,8 +7,7 @@ import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.transition.Visibility;
+import android.net.Uri;
 import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.Toast;
@@ -16,8 +15,10 @@ import android.widget.Toast;
 import java.util.Locale;
 
 import pakutoma.iijmiocouponwidget.R;
+import pakutoma.iijmiocouponwidget.exception.NotFoundValidTokenException;
 import pakutoma.iijmiocouponwidget.service.GetTraffic;
 import pakutoma.iijmiocouponwidget.service.SwitchCoupon;
+import pakutoma.iijmiocouponwidget.utility.CouponAPI;
 
 /**
  * Implementation of App Widget functionality.
@@ -26,6 +27,7 @@ public class SwitchWidget extends AppWidgetProvider {
 
 
     private static final String ACTION_GET_TRAFFIC = "pakutoma.iijmiocouponwidget.widget.SwitchWidget.ACTION_GET_TRAFFIC";
+    private static final String ACTION_WIDGET_ENABLE = "pakutoma.iijmiocouponwidget.widget.SwitchWidget.ACTION_WIDGET_ENABLE";
 
     private static final String ACTION_CALLBACK_GET_TRAFFIC = "pakutoma.iijmiocouponwidget.widget.SwitchWidget.ACTION_CALLBACK_GET_TRAFFIC";
     private static final String ACTION_CALLBACK_CHANGE_COUPON = "pakutoma.iijmiocouponwidget.widget.SwitchWidget.ACTION_CALLBACK_CHANGE_COUPON";
@@ -48,7 +50,7 @@ public class SwitchWidget extends AppWidgetProvider {
             changeSwitch(context,intent);
         }
 
-        if (intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED) || intent.getAction().equals(Intent.ACTION_MY_PACKAGE_REPLACED)) {
+        if (intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED) || intent.getAction().equals(Intent.ACTION_MY_PACKAGE_REPLACED) || intent.getAction().equals(ACTION_WIDGET_ENABLE)) {
             setAlarm(context);
             Intent getTrafficIntent = new Intent(context, GetTraffic.class);
             context.startService(getTrafficIntent);
@@ -84,7 +86,7 @@ public class SwitchWidget extends AppWidgetProvider {
         context.startService(switchCouponIntent);
     }
 
-    public void updateTraffic(Context context,Intent intent) {
+    private void updateTraffic(Context context,Intent intent) {
         RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.switch_widget);
         if (!intent.getBooleanExtra("HAS_TOKEN",false)) {
             remoteViews.setTextViewText(R.id.data_traffic, "未認証");
@@ -113,7 +115,7 @@ public class SwitchWidget extends AppWidgetProvider {
         return result;
     }
 
-    public void changeSwitch(Context context,Intent intent) {
+    private void changeSwitch(Context context,Intent intent) {
         if (!intent.getBooleanExtra("HAS_TOKEN",false)) {
             Toast.makeText(context, "認証が行われていません。", Toast.LENGTH_SHORT).show();
             return;
@@ -142,7 +144,7 @@ public class SwitchWidget extends AppWidgetProvider {
 
     @Override
     public void onEnabled(Context context) {
-        // Enter relevant functionality for when the first widget is created
+
     }
 
     @Override

@@ -32,7 +32,8 @@
             android:background="@drawable/circle_switch_base"
             android:layout_marginLeft="6dp"
             android:layout_marginRight="6dp"
-            android:layout_gravity="center" />
+            android:layout_gravity="center"
+            android:stateListAnimator="@animator/button_state_list_anim_material_0dp" />
 
         <Button
             android:layout_width="wrap_content"
@@ -42,7 +43,8 @@
             android:layout_marginLeft="6dp"
             android:layout_marginRight="6dp"
             android:layout_gravity="center"
-            android:visibility="invisible" />
+            android:visibility="invisible"
+            android:stateListAnimator="@animator/button_state_list_anim_material_0dp" />
 
         <FrameLayout
             android:layout_width="match_parent"

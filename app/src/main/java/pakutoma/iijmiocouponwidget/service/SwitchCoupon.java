@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.IBinder;
 import android.widget.RemoteViews;
+import android.widget.Toast;
 
 import pakutoma.iijmiocouponwidget.R;
 import pakutoma.iijmiocouponwidget.widget.SwitchWidget;
@@ -53,6 +54,7 @@ public class SwitchCoupon extends Service {
         remoteViews.setOnClickPendingIntent(R.id.coupon_switch_top_on, pendingIntent);
         remoteViews.setOnClickPendingIntent(R.id.coupon_switch_base_on, pendingIntent);
         manager.updateAppWidget(thisWidget, remoteViews);
+        Toast.makeText(this, "ウワアアアアアアアアアアアアアアアアアアアアアアアア", Toast.LENGTH_SHORT).show();
         return START_STICKY;
     }
 

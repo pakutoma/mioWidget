@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 
 import pakutoma.iijmiocouponwidget.utility.CouponAPI;
-import pakutoma.iijmiocouponwidget.utility.CouponData;
 import pakutoma.iijmiocouponwidget.exception.NotFoundValidTokenException;
 
 

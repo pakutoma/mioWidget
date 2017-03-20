@@ -2,14 +2,8 @@
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
     <PreferenceScreen
-        android:title="アカウント切替"
-        android:summary="ウィジェットでON/OFFを行う回線を切り替えます"
-        android:key="accountSetting">
-        >
-        <intent android:action="android.intent.action.VIEW"
-            android:targetPackage="pakutoma.iijmiocouponwidget"
-            android:targetClass="pakutoma.iijmiocouponwidget.activity.AccountSwitchActivity" />
-    </PreferenceScreen>
+        android:title="使い方"
+        android:summary="このアプリはウィジェット専用です。ホーム画面にウィジェットを設定してお使いください。" />
     <pakutoma.iijmiocouponwidget.activity.AboutDialog
         android:title="このアプリについて"
         android:key="about" />

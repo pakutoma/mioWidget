@@ -1,6 +1,4 @@
 <resources>
     <string name="app_name">IIJmioCouponWidget</string>
     <string name="appwidget_text">0.00G</string>
-    <string name="add_widget">Add widget</string>
-    <string name="switch_text">ON</string>
 </resources>

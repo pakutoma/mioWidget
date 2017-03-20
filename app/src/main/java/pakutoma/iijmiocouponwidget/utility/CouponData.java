@@ -4,9 +4,9 @@ package pakutoma.iijmiocouponwidget.utility;
  * Created by PAKUTOMA on 2016/12/04.
  */
 public class CouponData {
-    private int traffic;
-    private boolean sw;
-    public CouponData(int traffic,boolean sw) {
+    private final int traffic;
+    private final boolean sw;
+    CouponData(int traffic,boolean sw) {
         this.traffic = traffic;
         this.sw = sw;
     }
@@ -17,9 +17,5 @@ public class CouponData {
 
     public boolean getSwitch() {
         return this.sw;
-    }
-
-    public void setSwitch(boolean sw) {
-        this.sw = sw;
     }
 }
