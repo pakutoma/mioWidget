@@ -25,6 +25,7 @@ public class SwitchWidget extends AppWidgetProvider {
 
     private static final String ACTION_GET_TRAFFIC = "pakutoma.iijmiocouponwidget.widget.SwitchWidget.ACTION_GET_TRAFFIC";
     private static final String ACTION_WIDGET_ENABLE = "pakutoma.iijmiocouponwidget.widget.SwitchWidget.ACTION_WIDGET_ENABLE";
+    private static final String ACTION_WAIT_CHANGE_SWITCH = "pakutoma.iijmiocouponwidget.widget.SwitchWidget.ACTION_WAIT_CHANGE_SWITCH";
 
     private static final String ACTION_CALLBACK_GET_TRAFFIC = "pakutoma.iijmiocouponwidget.widget.SwitchWidget.ACTION_CALLBACK_GET_TRAFFIC";
     private static final String ACTION_CALLBACK_CHANGE_COUPON = "pakutoma.iijmiocouponwidget.widget.SwitchWidget.ACTION_CALLBACK_CHANGE_COUPON";
@@ -45,6 +46,10 @@ public class SwitchWidget extends AppWidgetProvider {
 
         if (intent.getAction().equals(ACTION_CALLBACK_CHANGE_COUPON)) {
             changeSwitch(context,intent);
+        }
+
+        if (intent.getAction().equals(ACTION_WAIT_CHANGE_SWITCH)) {
+            changeToWaitMode(context);
         }
 
         if (intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED) || intent.getAction().equals(Intent.ACTION_MY_PACKAGE_REPLACED) || intent.getAction().equals(ACTION_WIDGET_ENABLE)) {
@@ -93,7 +98,7 @@ public class SwitchWidget extends AppWidgetProvider {
             int traffic = intent.getIntExtra("TRAFFIC",0);
             remoteViews.setTextViewText(R.id.data_traffic, convertPrefixString(traffic));
             isCouponEnable = intent.getBooleanExtra("COUPON",false);
-            changeSwitchMode(remoteViews,isCouponEnable);
+            changeSwitchMode(remoteViews);
         }
         ComponentName thisWidget = new ComponentName(context, SwitchWidget.class);
         AppWidgetManager manager = AppWidgetManager.getInstance(context);
@@ -124,18 +129,31 @@ public class SwitchWidget extends AppWidgetProvider {
             Toast.makeText(context,"切り替えに失敗しました。",Toast.LENGTH_SHORT).show();
         }
         RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.switch_widget);
-        changeSwitchMode(remoteViews,isCouponEnable);
+        changeSwitchMode(remoteViews);
 
         ComponentName thisWidget = new ComponentName(context, SwitchWidget.class);
         AppWidgetManager manager = AppWidgetManager.getInstance(context);
         manager.updateAppWidget(thisWidget, remoteViews);
     }
 
-    private void changeSwitchMode(RemoteViews remoteViews,Boolean isCouponEnable) {
+    private void changeToWaitMode(Context context) {
+        RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.switch_widget);
+        remoteViews.setViewVisibility(R.id.coupon_switch_top_on_end, View.INVISIBLE);
+        remoteViews.setViewVisibility(R.id.coupon_switch_top_start, View.INVISIBLE);
+        remoteViews.setViewVisibility(R.id.coupon_switch_top_on_start, isCouponEnable ? View.VISIBLE : View.INVISIBLE);
+        remoteViews.setViewVisibility(R.id.coupon_switch_top_end,isCouponEnable ? View.INVISIBLE : View.VISIBLE);
+        ComponentName thisWidget = new ComponentName(context, SwitchWidget.class);
+        AppWidgetManager manager = AppWidgetManager.getInstance(context);
+        manager.updateAppWidget(thisWidget, remoteViews);
+    }
+
+    private void changeSwitchMode(RemoteViews remoteViews) {
         remoteViews.setViewVisibility(R.id.coupon_switch_base_on, isCouponEnable ? View.VISIBLE : View.INVISIBLE);
         remoteViews.setViewVisibility(R.id.coupon_switch_base, isCouponEnable ? View.INVISIBLE : View.VISIBLE);
-        remoteViews.setViewVisibility(R.id.coupon_switch_top_on, isCouponEnable ? View.VISIBLE : View.INVISIBLE);
-        remoteViews.setViewVisibility(R.id.coupon_switch_top, isCouponEnable ? View.INVISIBLE : View.VISIBLE);
+        remoteViews.setViewVisibility(R.id.coupon_switch_top_on_end, isCouponEnable ? View.VISIBLE : View.INVISIBLE);
+        remoteViews.setViewVisibility(R.id.coupon_switch_top_start, isCouponEnable ? View.INVISIBLE : View.VISIBLE);
+        remoteViews.setViewVisibility(R.id.coupon_switch_top_on_start, View.INVISIBLE);
+        remoteViews.setViewVisibility(R.id.coupon_switch_top_end, View.INVISIBLE);
 
     }
 

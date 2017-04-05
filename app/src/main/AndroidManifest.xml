@@ -22,6 +22,7 @@
                 <action android:name="pakutoma.iijmiocouponwidget.widget.SwitchWidget.ACTION_CALLBACK_GET_TRAFFIC" />
                 <action android:name="pakutoma.iijmiocouponwidget.widget.SwitchWidget.ACTION_CALLBACK_CHANGE_COUPON" />
                 <action android:name="pakutoma.iijmiocouponwidget.widget.SwitchWidget.ACTION_WIDGET_ENABLE" />
+                <action android:name="pakutoma.iijmiocouponwidget.widget.SwitchWidget.ACTION_WAIT_CHANGE_SWITCH" />
             </intent-filter>
 
             <meta-data

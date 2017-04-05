@@ -20,6 +20,8 @@ import pakutoma.iijmiocouponwidget.widget.SwitchWidget;
 public class SwitchCoupon extends Service {
     private static final String ACTION_SWITCH_COUPON = "pakutoma.iijmiocouponwidget.widget.SwitchWidget.ACTION_SWITCH_COUPON";
     private static final String ACTION_CHANGE_COUPON = "pakutoma.iijmiocouponwidget.widget.SwitchWidget.ACTION_CHANGE_COUPON";
+    private static final String ACTION_WAIT_CHANGE_SWITCH = "pakutoma.iijmiocouponwidget.widget.SwitchWidget.ACTION_WAIT_CHANGE_SWITCH";
+    private static long lastClickTime = 0;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -40,19 +42,23 @@ public class SwitchCoupon extends Service {
                 authIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(authIntent);
             } else {
-                Intent changeIntent = new Intent(ACTION_CHANGE_COUPON);
-                changeIntent.setPackage("pakutoma.iijmiocouponwidget");
-                startService(changeIntent);
+                if (System.currentTimeMillis() - lastClickTime > 1000 * 60) {
+                    lastClickTime = System.currentTimeMillis();
+                    Intent waitIntent = new Intent(ACTION_WAIT_CHANGE_SWITCH);
+                    sendBroadcast(waitIntent);
+                    Intent changeIntent = new Intent(ACTION_CHANGE_COUPON);
+                    changeIntent.setPackage("pakutoma.iijmiocouponwidget");
+                    startService(changeIntent);
+                } else {
+                    Toast.makeText(this, "API limit: あと" + Long.toString((1000 * 60 - (System.currentTimeMillis() - lastClickTime)) / 1000) + "秒お待ち下さい。", Toast.LENGTH_SHORT).show();
+                }
             }
         }
 
         Intent clickIntent = new Intent();
         clickIntent.setAction(ACTION_SWITCH_COUPON);
         PendingIntent pendingIntent = PendingIntent.getService(this, 0, clickIntent, 0);
-        remoteViews.setOnClickPendingIntent(R.id.coupon_switch_top, pendingIntent);
-        remoteViews.setOnClickPendingIntent(R.id.coupon_switch_base, pendingIntent);
-        remoteViews.setOnClickPendingIntent(R.id.coupon_switch_top_on, pendingIntent);
-        remoteViews.setOnClickPendingIntent(R.id.coupon_switch_base_on, pendingIntent);
+        remoteViews.setOnClickPendingIntent(R.id.translate_button, pendingIntent);
         manager.updateAppWidget(thisWidget, remoteViews);
         return START_STICKY;
     }

@@ -26,6 +26,12 @@
         android:gravity="center_vertical">
 
         <Button
+            android:id="@+id/translate_button"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#00000000" />
+
+        <Button
             android:layout_width="match_parent"
             android:layout_height="20dp"
             android:id="@+id/coupon_switch_base"
@@ -51,16 +57,33 @@
             <Button
                 android:layout_width="20dp"
                 android:layout_height="20dp"
-                android:id="@+id/coupon_switch_top"
+                android:id="@+id/coupon_switch_top_start"
                 android:background="@drawable/circle_switch_top"
                 android:layout_marginLeft="6dp"
                 android:layout_marginRight="6dp"
                 android:layout_gravity="start" />
-
             <Button
                 android:layout_width="20dp"
                 android:layout_height="20dp"
-                android:id="@+id/coupon_switch_top_on"
+                android:id="@+id/coupon_switch_top_on_start"
+                android:background="@drawable/circle_switch_top_on"
+                android:layout_marginLeft="6dp"
+                android:layout_marginRight="6dp"
+                android:layout_gravity="start"
+                android:visibility="invisible"/>
+            <Button
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:id="@+id/coupon_switch_top_end"
+                android:background="@drawable/circle_switch_top"
+                android:layout_marginLeft="6dp"
+                android:layout_marginRight="6dp"
+                android:layout_gravity="end"
+                android:visibility="invisible"/>
+            <Button
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:id="@+id/coupon_switch_top_on_end"
                 android:background="@drawable/circle_switch_top_on"
                 android:layout_marginLeft="6dp"
                 android:layout_marginRight="6dp"
