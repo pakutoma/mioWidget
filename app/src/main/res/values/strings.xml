@@ -1,4 +1,4 @@
 <resources>
-    <string name="app_name">IIJmioCouponWidget</string>
-    <string name="appwidget_text">0.00G</string>
+    <string name="app_name">mioWidget</string>
+    <string name="appwidget_text">未取得</string>
 </resources>
