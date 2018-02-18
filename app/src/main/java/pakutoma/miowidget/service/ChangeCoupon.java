@@ -1,11 +1,11 @@
-package pakutoma.iijmiocouponwidget.service;
+package pakutoma.miowidget.service;
 
 import android.app.IntentService;
 import android.content.Intent;
 import android.content.SharedPreferences;
 
-import pakutoma.iijmiocouponwidget.utility.CouponAPI;
-import pakutoma.iijmiocouponwidget.exception.NotFoundValidTokenException;
+import pakutoma.miowidget.utility.CouponAPI;
+import pakutoma.miowidget.exception.NotFoundValidTokenException;
 
 
 /**
@@ -13,7 +13,7 @@ import pakutoma.iijmiocouponwidget.exception.NotFoundValidTokenException;
  * Created by PAKUTOMA on 2016/06/21.
  */
 public class ChangeCoupon extends IntentService {
-    private static final String ACTION_CALLBACK_CHANGE_COUPON = "pakutoma.iijmiocouponwidget.widget.SwitchWidget.ACTION_CALLBACK_CHANGE_COUPON";
+    private static final String ACTION_CALLBACK_CHANGE_COUPON = "pakutoma.miowidget.widget.SwitchWidget.ACTION_CALLBACK_CHANGE_COUPON";
 
     public ChangeCoupon() {
         super("ChangeCoupon");
@@ -46,7 +46,7 @@ public class ChangeCoupon extends IntentService {
         if (isChanged) {
             callbackIntent.putExtra("NOW_SWITCH",nowSwitch);
         }
-        callbackIntent.setPackage("pakutoma.iijmiocouponwidget");
+        callbackIntent.setPackage("pakutoma.miowidget");
         sendBroadcast(callbackIntent);
     }
 

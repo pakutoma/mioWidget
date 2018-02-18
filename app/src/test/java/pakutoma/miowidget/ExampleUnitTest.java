@@ -1,4 +1,4 @@
-package pakutoma.iijmiocouponwidget;
+package pakutoma.miowidget;
 
 import org.junit.Test;
 

@@ -1,4 +1,4 @@
-package pakutoma.iijmiocouponwidget.service;
+package pakutoma.miowidget.service;
 
 import android.app.PendingIntent;
 import android.app.Service;
@@ -11,16 +11,16 @@ import android.os.IBinder;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
-import pakutoma.iijmiocouponwidget.R;
-import pakutoma.iijmiocouponwidget.widget.SwitchWidget;
+import pakutoma.miowidget.R;
+import pakutoma.miowidget.widget.SwitchWidget;
 
 /**
  * Created by PAKUTOMA on 2016/12/10.
  */
 public class SwitchCoupon extends Service {
-    private static final String ACTION_SWITCH_COUPON = "pakutoma.iijmiocouponwidget.widget.SwitchWidget.ACTION_SWITCH_COUPON";
-    private static final String ACTION_CHANGE_COUPON = "pakutoma.iijmiocouponwidget.widget.SwitchWidget.ACTION_CHANGE_COUPON";
-    private static final String ACTION_WAIT_CHANGE_SWITCH = "pakutoma.iijmiocouponwidget.widget.SwitchWidget.ACTION_WAIT_CHANGE_SWITCH";
+    private static final String ACTION_SWITCH_COUPON = "pakutoma.miowidget.widget.SwitchWidget.ACTION_SWITCH_COUPON";
+    private static final String ACTION_CHANGE_COUPON = "pakutoma.miowidget.widget.SwitchWidget.ACTION_CHANGE_COUPON";
+    private static final String ACTION_WAIT_CHANGE_SWITCH = "pakutoma.miowidget.widget.SwitchWidget.ACTION_WAIT_CHANGE_SWITCH";
     private static long lastClickTime = 0;
 
     @Override
@@ -36,7 +36,7 @@ public class SwitchCoupon extends Service {
                 builder.scheme("https");
                 builder.authority("api.iijmio.jp");
                 builder.path("/mobile/d/v1/authorization");
-                builder.encodedQuery("response_type=token&client_id=IilCI1xrAgqKrXV9Zt4&state=example_state&redirect_uri=pakutoma.iijmiocouponwidget://callback");
+                builder.encodedQuery("response_type=token&client_id=IilCI1xrAgqKrXV9Zt4&state=example_state&redirect_uri=pakutoma.miowidget://callback");
                 Uri uri = builder.build();
                 Intent authIntent = new Intent(Intent.ACTION_VIEW, uri);
                 authIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -47,7 +47,7 @@ public class SwitchCoupon extends Service {
                     Intent waitIntent = new Intent(ACTION_WAIT_CHANGE_SWITCH);
                     sendBroadcast(waitIntent);
                     Intent changeIntent = new Intent(ACTION_CHANGE_COUPON);
-                    changeIntent.setPackage("pakutoma.iijmiocouponwidget");
+                    changeIntent.setPackage("pakutoma.miowidget");
                     startService(changeIntent);
                 } else {
                     Toast.makeText(this, "API limit: あと" + Long.toString((1000 * 60 - (System.currentTimeMillis() - lastClickTime)) / 1000) + "秒お待ち下さい。", Toast.LENGTH_SHORT).show();

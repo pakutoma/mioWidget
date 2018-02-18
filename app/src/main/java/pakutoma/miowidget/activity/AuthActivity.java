@@ -1,4 +1,4 @@
-package pakutoma.iijmiocouponwidget.activity;
+package pakutoma.miowidget.activity;
 
 import android.app.Activity;
 import android.app.AlarmManager;
@@ -13,12 +13,12 @@ import android.widget.Toast;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import pakutoma.iijmiocouponwidget.R;
-import pakutoma.iijmiocouponwidget.service.GetTraffic;
-import pakutoma.iijmiocouponwidget.widget.SwitchWidget;
+import pakutoma.miowidget.R;
+import pakutoma.miowidget.service.GetTraffic;
+import pakutoma.miowidget.widget.SwitchWidget;
 
 public class AuthActivity extends Activity {
-    private static final String ACTION_WIDGET_ENABLE = "pakutoma.iijmiocouponwidget.widget.SwitchWidget.ACTION_WIDGET_ENABLE";
+    private static final String ACTION_WIDGET_ENABLE = "pakutoma.miowidget.widget.SwitchWidget.ACTION_WIDGET_ENABLE";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

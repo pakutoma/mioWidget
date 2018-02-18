@@ -4,10 +4,10 @@
     <PreferenceScreen
         android:title="使い方"
         android:summary="このアプリはウィジェット専用です。ホーム画面にウィジェットを設定してお使いください。" />
-    <pakutoma.iijmiocouponwidget.activity.AboutDialog
+    <pakutoma.miowidget.activity.AboutDialog
         android:title="このアプリについて"
         android:key="about" />
-    <pakutoma.iijmiocouponwidget.activity.LicenseDialog
+    <pakutoma.miowidget.activity.LicenseDialog
         android:title="オープンソースライセンス"
         android:key="openSourceLicense" />
 </PreferenceScreen>

@@ -1,4 +1,4 @@
-package pakutoma.iijmiocouponwidget;
+package pakutoma.miowidget;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

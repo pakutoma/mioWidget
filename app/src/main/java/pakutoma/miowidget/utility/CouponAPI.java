@@ -1,4 +1,4 @@
-package pakutoma.iijmiocouponwidget.utility;
+package pakutoma.miowidget.utility;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -15,7 +15,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import pakutoma.iijmiocouponwidget.exception.NotFoundValidTokenException;
+import pakutoma.miowidget.exception.NotFoundValidTokenException;
 
 /**
  * CouponAPI access iijmio api.

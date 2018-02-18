@@ -1,10 +1,10 @@
-package pakutoma.iijmiocouponwidget.activity;
+package pakutoma.miowidget.activity;
 
 import android.preference.PreferenceFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-import pakutoma.iijmiocouponwidget.R;
+import pakutoma.miowidget.R;
 
 public class MainSettingsActivity extends AppCompatActivity {
 

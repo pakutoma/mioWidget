@@ -5,4 +5,4 @@
     android:minWidth="40dp"
     android:previewImage="@drawable/widget_preview"
     android:updatePeriodMillis="0"
-    android:configure="pakutoma.iijmiocouponwidget.activity.OpenBrowserActivity"/>
+    android:configure="pakutoma.miowidget.activity.OpenBrowserActivity"/>

@@ -1,4 +1,4 @@
-package pakutoma.iijmiocouponwidget.widget;
+package pakutoma.miowidget.widget;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -13,9 +13,9 @@ import android.widget.Toast;
 
 import java.util.Locale;
 
-import pakutoma.iijmiocouponwidget.R;
-import pakutoma.iijmiocouponwidget.service.GetTraffic;
-import pakutoma.iijmiocouponwidget.service.SwitchCoupon;
+import pakutoma.miowidget.R;
+import pakutoma.miowidget.service.GetTraffic;
+import pakutoma.miowidget.service.SwitchCoupon;
 
 /**
  * Implementation of App Widget functionality.
@@ -23,12 +23,12 @@ import pakutoma.iijmiocouponwidget.service.SwitchCoupon;
 public class SwitchWidget extends AppWidgetProvider {
 
 
-    private static final String ACTION_GET_TRAFFIC = "pakutoma.iijmiocouponwidget.widget.SwitchWidget.ACTION_GET_TRAFFIC";
-    private static final String ACTION_WIDGET_ENABLE = "pakutoma.iijmiocouponwidget.widget.SwitchWidget.ACTION_WIDGET_ENABLE";
-    private static final String ACTION_WAIT_CHANGE_SWITCH = "pakutoma.iijmiocouponwidget.widget.SwitchWidget.ACTION_WAIT_CHANGE_SWITCH";
+    private static final String ACTION_GET_TRAFFIC = "pakutoma.miowidget.widget.SwitchWidget.ACTION_GET_TRAFFIC";
+    private static final String ACTION_WIDGET_ENABLE = "pakutoma.miowidget.widget.SwitchWidget.ACTION_WIDGET_ENABLE";
+    private static final String ACTION_WAIT_CHANGE_SWITCH = "pakutoma.miowidget.widget.SwitchWidget.ACTION_WAIT_CHANGE_SWITCH";
 
-    private static final String ACTION_CALLBACK_GET_TRAFFIC = "pakutoma.iijmiocouponwidget.widget.SwitchWidget.ACTION_CALLBACK_GET_TRAFFIC";
-    private static final String ACTION_CALLBACK_CHANGE_COUPON = "pakutoma.iijmiocouponwidget.widget.SwitchWidget.ACTION_CALLBACK_CHANGE_COUPON";
+    private static final String ACTION_CALLBACK_GET_TRAFFIC = "pakutoma.miowidget.widget.SwitchWidget.ACTION_CALLBACK_GET_TRAFFIC";
+    private static final String ACTION_CALLBACK_CHANGE_COUPON = "pakutoma.miowidget.widget.SwitchWidget.ACTION_CALLBACK_CHANGE_COUPON";
 
     private static Boolean isCouponEnable = true;
 

@@ -1,4 +1,4 @@
-package pakutoma.iijmiocouponwidget.activity;
+package pakutoma.miowidget.activity;
 
 /**
  * Created by PAKUTOMA on 2016/12/04.

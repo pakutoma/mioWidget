@@ -1,4 +1,4 @@
-package pakutoma.iijmiocouponwidget.activity;
+package pakutoma.miowidget.activity;
 
 import android.content.Context;
 import android.preference.DialogPreference;

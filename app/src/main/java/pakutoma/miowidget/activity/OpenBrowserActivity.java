@@ -1,4 +1,4 @@
-package pakutoma.iijmiocouponwidget.activity;
+package pakutoma.miowidget.activity;
 
 import android.app.Activity;
 import android.app.AlarmManager;
@@ -11,17 +11,17 @@ import android.os.Bundle;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
-import pakutoma.iijmiocouponwidget.R;
-import pakutoma.iijmiocouponwidget.exception.NotFoundValidTokenException;
-import pakutoma.iijmiocouponwidget.utility.CouponAPI;
-import pakutoma.iijmiocouponwidget.widget.SwitchWidget;
+import pakutoma.miowidget.R;
+import pakutoma.miowidget.exception.NotFoundValidTokenException;
+import pakutoma.miowidget.utility.CouponAPI;
+import pakutoma.miowidget.widget.SwitchWidget;
 
 /**
  * Created by PAKUTOMA on 2017/03/20.
  */
 
 public class OpenBrowserActivity extends Activity {
-    private static final String ACTION_WIDGET_ENABLE = "pakutoma.iijmiocouponwidget.widget.SwitchWidget.ACTION_WIDGET_ENABLE";
+    private static final String ACTION_WIDGET_ENABLE = "pakutoma.miowidget.widget.SwitchWidget.ACTION_WIDGET_ENABLE";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +53,7 @@ public class OpenBrowserActivity extends Activity {
             builder.scheme("https");
             builder.authority("api.iijmio.jp");
             builder.path("/mobile/d/v1/authorization");
-            builder.encodedQuery("response_type=token&client_id=IilCI1xrAgqKrXV9Zt4&state=example_state&redirect_uri=pakutoma.iijmiocouponwidget://callback");
+            builder.encodedQuery("response_type=token&client_id=IilCI1xrAgqKrXV9Zt4&state=example_state&redirect_uri=pakutoma.miowidget://callback");
             Uri uri = builder.build();
             Intent authIntent = new Intent(Intent.ACTION_VIEW, uri);
             authIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
