@@ -21,7 +21,7 @@ import pakutoma.miowidget.widget.SwitchWidget
 class SwitchCoupon : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        val thisWidget = ComponentName(this, SwitchWidget::class.java!!)
+        val thisWidget = ComponentName(this, SwitchWidget::class.java)
         val manager = AppWidgetManager.getInstance(this)
         val remoteViews = RemoteViews(packageName, R.layout.switch_widget)
 

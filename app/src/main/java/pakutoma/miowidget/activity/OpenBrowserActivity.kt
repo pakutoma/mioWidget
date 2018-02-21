@@ -42,9 +42,9 @@ class OpenBrowserActivity : Activity() {
         appWidgetManager.updateAppWidget(appWidgetId, views)
 
         var isAuth = false
-        try {
-            CouponAPI(this)
-        } catch (e: NotFoundValidTokenException) {
+        val preferences = this.getSharedPreferences("iijmio_token", Context.MODE_PRIVATE)
+        val accessToken = preferences.getString("X-IIJmio-Authorization", "")
+        if(accessToken == "") {
             isAuth = true
             Toast.makeText(this, "認証を開始します。", Toast.LENGTH_SHORT).show()
             val builder = Uri.Builder()

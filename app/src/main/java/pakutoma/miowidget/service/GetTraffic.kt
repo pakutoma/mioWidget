@@ -4,12 +4,14 @@ import android.app.IntentService
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import pakutoma.miowidget.R
 
 import java.io.IOException
 
 import pakutoma.miowidget.utility.CouponAPI
 import pakutoma.miowidget.utility.CouponData
 import pakutoma.miowidget.exception.NotFoundValidTokenException
+import pakutoma.miowidget.utility.CouponInfo
 
 
 /**
@@ -19,13 +21,17 @@ import pakutoma.miowidget.exception.NotFoundValidTokenException
 class GetTraffic : IntentService("GetTraffic") {
 
     override fun onHandleIntent(intent: Intent?) {
-        val coupon: CouponAPI
-        val cd: CouponData
+        val preferences = getSharedPreferences("iijmio_token", Context.MODE_PRIVATE)
+        val couponInfo: CouponInfo
         try {
-            coupon = CouponAPI(applicationContext)
-            cd = coupon.couponData
+            val developerID = resources.getText(R.string.developerID).toString()
+            val accessToken = preferences.getString("X-IIJmio-Authorization","")
+            if(accessToken == "") {
+                throw NotFoundValidTokenException("Not found token in preference.")
+            }
+            val coupon = CouponAPI(developerID,accessToken)
+            couponInfo = coupon.fetchCouponInfo()
         } catch (e: NotFoundValidTokenException) {
-            val preferences = getSharedPreferences("iijmio_token", Context.MODE_PRIVATE)
             val editor = preferences.edit()
             editor.putString("X-IIJmio-Authorization", "")
             editor.putBoolean("has_token", false)
@@ -37,10 +43,10 @@ class GetTraffic : IntentService("GetTraffic") {
             return
         }
 
-        val isOnCoupon = cd.switch
-        val traffic = cd.traffic
+        val isOn = couponInfo.lineInfoList.first().couponUse
+        val remains = couponInfo.remains
 
-        sendCallback(true, true, traffic, isOnCoupon)
+        sendCallback(true, true, remains, isOn)
     }
 
 
