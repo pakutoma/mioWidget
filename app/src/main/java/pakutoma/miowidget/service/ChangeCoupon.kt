@@ -26,8 +26,8 @@ class ChangeCoupon : IntentService("ChangeCoupon") {
             }
             val coupon = CouponAPI(developerID,accessToken)
             val couponInfo = coupon.fetchCouponInfo()
-            val isOn = !couponInfo.lineInfoList.first().couponUse
-            val serviceCodeList = couponInfo.lineInfoList.map{it.serviceCode}
+            val isOn = !couponInfo.planInfoList[0].lineInfoList[0].couponUse
+            val serviceCodeList = couponInfo.planInfoList.flatMap{it.lineInfoList.map{it.serviceCode}}
             val changedSwitch = coupon.changeCouponUse(isOn,serviceCodeList)
             sendCallback(true, true, changedSwitch)
         } catch (e: NotFoundValidTokenException) {

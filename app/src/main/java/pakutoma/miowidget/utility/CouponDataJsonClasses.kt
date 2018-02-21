@@ -7,14 +7,14 @@ package pakutoma.miowidget.utility
 
 data class CouponDataFromJson(
         val returnCode: String?,
-        val couponInfo: CouponInfoFromJson
+        val couponInfo: List<CouponInfoFromJson>
 )
 
 data class CouponInfoFromJson(
         val hddServiceCode: String,
         val plan: String,
         val hdoInfo: List<HdoInfoFromJson>?,
-        val hduInfo: List<HduInfoFromJson>,
+        val hduInfo: List<HduInfoFromJson>?,
         val coupon: List<CouponFromJson>?,
         val history: List<HistoryFromJson>?,
         val remains: Int?
@@ -56,7 +56,7 @@ data class HistoryFromJson(
 )
 
 data class CouponDataToJson(
-        val couponInfo: CouponInfoToJson
+        val couponInfo: List<CouponInfoToJson>
 )
 
 data class CouponInfoToJson(

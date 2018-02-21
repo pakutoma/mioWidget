@@ -5,6 +5,7 @@ import com.github.kittinunf.fuel.core.FuelManager
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.httpPut
 import com.github.kittinunf.fuel.moshi.moshiDeserializerOf
+import com.github.kittinunf.fuel.moshi.responseObject
 import com.github.kittinunf.result.Result
 import com.squareup.moshi.Moshi
 import pakutoma.miowidget.exception.NotFoundValidTokenException
@@ -19,36 +20,38 @@ class CouponAPI constructor(developerID: String, accessToken: String) {
 
     init {
         FuelManager.instance.basePath = "https://api.iijmio.jp/mobile/d/v2"
-        FuelManager.instance.baseParams = listOf(
+        FuelManager.instance.baseHeaders = mapOf(
                 "X-IIJmio-Developer" to developerID,
                 "X-IIJmio-Authorization" to accessToken
         )
     }
 
     fun fetchCouponInfo(): CouponInfo {
-        val result = "/coupon".httpGet().responseObject<CouponDataFromJson>(moshiDeserializerOf<CouponDataFromJson>()).third
+        val (_, _, result) = "/coupon/".httpGet().responseObject<CouponDataFromJson>()
         val fetchedData = validateResult(result.component1(), result.component2())
         return convert(fetchedData)
     }
 
-    fun changeCouponUse(isOn: Boolean,serviceCodeList: List<String>): Boolean {
-        val couponDataToJson = packJsonClass(isOn,serviceCodeList)
+    fun changeCouponUse(isOn: Boolean, serviceCodeList: List<String>): Boolean {
+        val couponDataToJson = packJsonClass(isOn, serviceCodeList)
         val moshi = Moshi.Builder().build()
         val adapter = moshi.adapter(CouponDataToJson::class.java)
         val json = adapter.toJson(couponDataToJson)
-        val result = "/coupon".httpPut()
-                .header("Content-type" to  "application/json")
+        val (_, _, result) = "/coupon/".httpPut()
+                .header("Content-Type" to "application/json")
                 .body(json)
-                .responseObject<ReturnCodeFromJson>(moshiDeserializerOf<ReturnCodeFromJson>()).third
+                .responseObject<ReturnCodeFromJson>(moshiDeserializerOf<ReturnCodeFromJson>())
         return result is Result.Success
     }
 
-    private fun packJsonClass(isOn: Boolean,serviceCodeList: List<String>) : CouponDataToJson {
-        val typeList = serviceCodeList.groupBy { if(it.substring(0..2) == "hdo") "hdo" else "hda"}
-        val hdoInfoToJsonList = typeList["hdo"]?.map{HdoInfoToJson(it,isOn)} ?: ArrayList<HdoInfoToJson>()
-        val hduInfoToJsonList = typeList["hdu"]?.map{HduInfoToJson(it,isOn)} ?: ArrayList<HduInfoToJson>()
-        val couponInfoToJson = CouponInfoToJson(hdoInfoToJsonList,hduInfoToJsonList)
-        return CouponDataToJson(couponInfoToJson)
+    private fun packJsonClass(isOn: Boolean, serviceCodeList: List<String>): CouponDataToJson {
+        val typeList = serviceCodeList.groupBy { if (it.substring(0..2) == "hdo") "hdo" else "hda" }
+        val hdoInfoToJsonList = typeList["hdo"]?.map { HdoInfoToJson(it, isOn) }
+                ?: ArrayList<HdoInfoToJson>()
+        val hduInfoToJsonList = typeList["hdu"]?.map { HduInfoToJson(it, isOn) }
+                ?: ArrayList<HduInfoToJson>()
+        val couponInfoToJson = CouponInfoToJson(hdoInfoToJsonList, hduInfoToJsonList)
+        return CouponDataToJson(listOf(couponInfoToJson))
     }
 
 
@@ -69,21 +72,23 @@ class CouponAPI constructor(developerID: String, accessToken: String) {
     }
 
     private fun convert(data: CouponDataFromJson): CouponInfo {
-        return when (data.couponInfo.plan) {
-            "Family Share", "Minimum Start", "Light Start"
-            -> convertNormalData(data)
-            "Eco Minimum", "Eco Standard"
-            -> convertEcoData(data)
-            else -> throw UndefinedPlanException("Undefined plan name")
-        }
+        return CouponInfo(data.couponInfo.map {
+            when (it.plan) {
+                "Family Share", "Minimum Start", "Light Start"
+                -> convertNormalData(it)
+                "Eco Minimum", "Eco Standard"
+                -> convertEcoData(it)
+                else
+                -> throw UndefinedPlanException("Undefined plan name")
+            }
+        })
     }
 
-    private fun convertNormalData(data: CouponDataFromJson): CouponInfo {
-        val normalInfo = data.couponInfo
-        val hddServiceCode = normalInfo.hddServiceCode
+    private fun convertNormalData(normalInfo: CouponInfoFromJson): PlanInfo {
+        val serviceCode = normalInfo.hddServiceCode
         val plan = normalInfo.plan
         val lineInfoList = ArrayList<LineInfo>()
-        lineInfoList.addAll(normalInfo.hdoInfo!!.map {
+        lineInfoList.addAll(normalInfo.hdoInfo?.map {
             LineInfo(
                     it.hdoServiceCode,
                     ServiceType.HDO,
@@ -91,8 +96,8 @@ class CouponAPI constructor(developerID: String, accessToken: String) {
                     it.regulation,
                     it.couponUse
             )
-        })
-        lineInfoList.addAll(normalInfo.hduInfo.map {
+        } ?: emptyList())
+        lineInfoList.addAll(normalInfo.hduInfo?.map {
             LineInfo(
                     it.hduServiceCode,
                     ServiceType.HDU,
@@ -100,21 +105,20 @@ class CouponAPI constructor(developerID: String, accessToken: String) {
                     it.regulation,
                     it.couponUse
             )
-        })
-        val hdoRemains = normalInfo.hdoInfo.sumBy{it.coupon!!.sumBy { it.volume }}
-        val hduRemains = normalInfo.hduInfo.sumBy{it.coupon!!.sumBy { it.volume }}
-        val normalInfoRemains = normalInfo.coupon!!.sumBy { it.volume }
+        } ?: emptyList())
+        val hdoRemains = normalInfo.hdoInfo?.sumBy { it.coupon!!.sumBy { it.volume } } ?: 0
+        val hduRemains = normalInfo.hduInfo?.sumBy { it.coupon!!.sumBy { it.volume } } ?: 0
+        val normalInfoRemains = normalInfo.coupon?.sumBy { it.volume } ?: 0
         val remains = hdoRemains + hduRemains + normalInfoRemains
-        return CouponInfo(hddServiceCode,plan,lineInfoList,remains)
+        return PlanInfo(serviceCode, plan, lineInfoList, remains)
     }
 
-    private fun convertEcoData(data: CouponDataFromJson): CouponInfo {
-        val ecoInfo = data.couponInfo
-        val hddServiceCode = ecoInfo.hddServiceCode
+    private fun convertEcoData(ecoInfo: CouponInfoFromJson): PlanInfo {
+        val serviceCode = ecoInfo.hddServiceCode
         val plan = ecoInfo.plan
         val remains = ecoInfo.remains!!
         val lineInfoList = ArrayList<LineInfo>()
-        lineInfoList.addAll(ecoInfo.hduInfo.map {
+        lineInfoList.addAll(ecoInfo.hduInfo?.map {
             LineInfo(
                     it.hduServiceCode,
                     ServiceType.HDU,
@@ -122,8 +126,7 @@ class CouponAPI constructor(developerID: String, accessToken: String) {
                     it.regulation,
                     it.couponUse
             )
-        })
-        return CouponInfo(hddServiceCode,plan,lineInfoList,remains)
+        } ?: emptyList())
+        return PlanInfo(serviceCode, plan, lineInfoList, remains)
     }
-
 }

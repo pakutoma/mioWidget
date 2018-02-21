@@ -47,12 +47,7 @@ class OpenBrowserActivity : Activity() {
         if(accessToken == "") {
             isAuth = true
             Toast.makeText(this, "認証を開始します。", Toast.LENGTH_SHORT).show()
-            val builder = Uri.Builder()
-            builder.scheme("https")
-            builder.authority("api.iijmio.jp")
-            builder.path("/mobile/d/v1/authorization")
-            builder.encodedQuery("response_type=token&client_id=IilCI1xrAgqKrXV9Zt4&state=example_state&redirect_uri=pakutoma.miowidget://callback")
-            val uri = builder.build()
+            var uri = Uri.parse(resources.getText(R.string.authUri).toString())
             val authIntent = Intent(Intent.ACTION_VIEW, uri)
             authIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             this.startActivity(authIntent)

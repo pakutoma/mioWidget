@@ -43,8 +43,8 @@ class GetTraffic : IntentService("GetTraffic") {
             return
         }
 
-        val isOn = couponInfo.lineInfoList.first().couponUse
-        val remains = couponInfo.remains
+        val isOn = couponInfo.planInfoList[0].lineInfoList[0].couponUse
+        val remains = couponInfo.planInfoList.sumBy{it.remains}
 
         sendCallback(true, true, remains, isOn)
     }

@@ -6,7 +6,11 @@ package pakutoma.miowidget.utility
  */
 
 data class CouponInfo(
-        val hddServiceCode: String = "",
+        val planInfoList: List<PlanInfo>
+)
+
+data class PlanInfo(
+        val serviceCode: String = "",
         val plan: String = "",
         val lineInfoList: List<LineInfo>,
         val remains: Int = 0
