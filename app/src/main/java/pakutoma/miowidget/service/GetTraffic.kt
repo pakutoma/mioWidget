@@ -3,13 +3,11 @@ package pakutoma.miowidget.service
 import android.app.IntentService
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import pakutoma.miowidget.R
 
 import java.io.IOException
 
 import pakutoma.miowidget.utility.CouponAPI
-import pakutoma.miowidget.utility.CouponData
 import pakutoma.miowidget.exception.NotFoundValidTokenException
 import pakutoma.miowidget.utility.CouponInfo
 
