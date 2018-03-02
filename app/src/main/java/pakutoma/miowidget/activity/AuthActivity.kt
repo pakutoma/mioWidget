@@ -22,49 +22,31 @@ class AuthActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_auth)
-        val intent = intent
-        if (intent != null) {
-            val data = intent.dataString
-            if (data != null) {
-                val uri = Uri.parse(data)
-                val p = Pattern.compile("(?<=access_token=).+?(?=&)")
-                val m = p.matcher(uri.fragment)
-                if (m.find()) {
-                    val token = m.group()
-                    val preferences = getSharedPreferences("iijmio_token", Context.MODE_PRIVATE)
-                    val editor = preferences.edit()
-                    editor.putString("X-IIJmio-Authorization", token)
-                    editor.putBoolean("has_token", true)
-                    editor.apply()
-                    val homeIntent = Intent(Intent.ACTION_MAIN)
-                    homeIntent.addCategory(Intent.CATEGORY_HOME)
-                    homeIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                    startActivity(homeIntent)
+        if (intent?.dataString == null) {
+            finish()
+        }
 
-                    val getTrafficIntent = Intent(this, GetTraffic::class.java)
-                    this.startService(getTrafficIntent)
+        val uri = Uri.parse(intent.dataString)
+        val p = Pattern.compile("(?<=access_token=).+?(?=&)")
+        val m = p.matcher(uri.fragment)
+        if (m.find()) {
+            val token = m.group()
+            val preferences = getSharedPreferences("iijmio_token", Context.MODE_PRIVATE)
+            val editor = preferences.edit()
+            editor.putString("X-IIJmio-Authorization", token)
+            editor.putBoolean("has_token", true)
+            editor.apply()
+            val homeIntent = Intent(Intent.ACTION_MAIN)
+            homeIntent.addCategory(Intent.CATEGORY_HOME)
+            homeIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            startActivity(homeIntent)
 
-                    Toast.makeText(this, "認証が完了しました。", Toast.LENGTH_SHORT).show()
-                    setWidgetButtonIntent()
-                }
-            }
+            // TODO: Service呼び出し部分書き換え
+            val getTrafficIntent = Intent(this, GetTraffic::class.java)
+            this.startService(getTrafficIntent)
+
+            Toast.makeText(this, "認証が完了しました。", Toast.LENGTH_SHORT).show()
         }
         finish()
     }
-
-    private fun setWidgetButtonIntent() {
-        val intent = Intent(applicationContext, SwitchWidget::class.java)
-        intent.action = ACTION_WIDGET_ENABLE
-        val sender = PendingIntent.getBroadcast(this, 0, intent, 0)
-        val am = this.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val interval: Long = 1000
-        val nextAlarm = System.currentTimeMillis() + interval
-        am.set(AlarmManager.RTC, nextAlarm, sender)
-    }
-
-    companion object {
-        private val ACTION_WIDGET_ENABLE = "pakutoma.miowidget.widget.SwitchWidget.ACTION_WIDGET_ENABLE"
-    }
-
-
 }
