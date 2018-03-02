@@ -1,10 +1,7 @@
 package pakutoma.miowidget.activity
 
 import android.app.Activity
-import android.app.AlarmManager
-import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -12,20 +9,16 @@ import android.widget.RemoteViews
 import android.widget.Toast
 
 import pakutoma.miowidget.R
-import pakutoma.miowidget.exception.NotFoundValidTokenException
-import pakutoma.miowidget.utility.CouponAPI
-import pakutoma.miowidget.widget.SwitchWidget
 
 /**
+ * 認証画面をブラウザで開くためのActivity
  * Created by PAKUTOMA on 2017/03/20.
  */
 
 class OpenBrowserActivity : Activity() {
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_auth)
-        val intent = intent
         val extras = intent.extras
         var appWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID
         if (extras != null) {
@@ -40,41 +33,15 @@ class OpenBrowserActivity : Activity() {
         val appWidgetManager = AppWidgetManager.getInstance(this)
         val views = RemoteViews(this.packageName, R.layout.switch_widget)
         appWidgetManager.updateAppWidget(appWidgetId, views)
-
-        var isAuth = false
-        val preferences = this.getSharedPreferences("iijmio_token", Context.MODE_PRIVATE)
-        val accessToken = preferences.getString("X-IIJmio-Authorization", "")
-        if(accessToken == "") {
-            isAuth = true
-            Toast.makeText(this, "認証を開始します。", Toast.LENGTH_SHORT).show()
-            var uri = Uri.parse(resources.getText(R.string.authUri).toString())
-            val authIntent = Intent(Intent.ACTION_VIEW, uri)
-            authIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            this.startActivity(authIntent)
-        }
-
-        if (!isAuth) {
-            setWidgetButtonIntent()
-        }
+        Toast.makeText(this, "認証を開始します。", Toast.LENGTH_SHORT).show()
+        val uri = Uri.parse(resources.getText(R.string.authUri).toString())
+        val authIntent = Intent(Intent.ACTION_VIEW, uri)
+        authIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        this.startActivity(authIntent)
         val resultValue = Intent()
         resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
         setResult(Activity.RESULT_OK, resultValue)
         finish()
-
-    }
-
-    private fun setWidgetButtonIntent() {
-        val intent = Intent(applicationContext, SwitchWidget::class.java)
-        intent.action = ACTION_WIDGET_ENABLE
-        val sender = PendingIntent.getBroadcast(this, 0, intent, 0)
-        val am = this.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val interval: Long = 1000
-        val nextAlarm = System.currentTimeMillis() + interval
-        am.set(AlarmManager.RTC, nextAlarm, sender)
-    }
-
-    companion object {
-        private val ACTION_WIDGET_ENABLE = "pakutoma.miowidget.widget.SwitchWidget.ACTION_WIDGET_ENABLE"
     }
 }
 
