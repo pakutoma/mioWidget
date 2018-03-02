@@ -19,10 +19,6 @@
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
-                <action android:name="pakutoma.miowidget.widget.SwitchWidget.ACTION_CALLBACK_GET_TRAFFIC" />
-                <action android:name="pakutoma.miowidget.widget.SwitchWidget.ACTION_CALLBACK_CHANGE_COUPON" />
-                <action android:name="pakutoma.miowidget.widget.SwitchWidget.ACTION_WIDGET_ENABLE" />
-                <action android:name="pakutoma.miowidget.widget.SwitchWidget.ACTION_WAIT_CHANGE_SWITCH" />
             </intent-filter>
 
             <meta-data
@@ -34,17 +30,11 @@
             android:name="pakutoma.miowidget.service.SwitchCoupon"
             android:enabled="true"
             android:exported="false">
-            <intent-filter>
-                <action android:name="pakutoma.miowidget.widget.SwitchWidget.ACTION_SWITCH_COUPON" />
-            </intent-filter>
         </service>
         <service
             android:name="pakutoma.miowidget.service.ChangeCoupon"
             android:enabled="true"
             android:exported="false">
-            <intent-filter>
-                <action android:name="pakutoma.miowidget.widget.SwitchWidget.ACTION_CHANGE_COUPON" />
-            </intent-filter>
         </service>
         <service
             android:name="pakutoma.miowidget.service.GetTraffic"
