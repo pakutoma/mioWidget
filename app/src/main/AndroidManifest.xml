@@ -14,7 +14,8 @@
         android:theme="@style/AppTheme">
         <receiver
             android:name="pakutoma.miowidget.widget.SwitchWidget"
-            android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
+            android:permission="android.permission.RECEIVE_BOOT_COMPLETED"
+            android:updatePeriodMillis="1800000">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
