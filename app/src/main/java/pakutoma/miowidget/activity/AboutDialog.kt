@@ -25,7 +25,7 @@ class AboutDialog : DialogPreference {
 
     override fun onCreateDialogView(): View {
         val webView = WebView(this.context)
-        webView.setWebViewClient(WebViewClient())
+        webView.webViewClient = WebViewClient()
         webView.loadUrl("file:///android_asset/about.html")
         return webView
     }
