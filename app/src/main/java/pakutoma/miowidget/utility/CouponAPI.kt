@@ -1,158 +1,132 @@
 package pakutoma.miowidget.utility
 
-import android.content.Context
-import android.content.SharedPreferences
-
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.node.ArrayNode
-import com.fasterxml.jackson.databind.node.ObjectNode
-
-import java.io.BufferedReader
-import java.io.IOException
-import java.io.InputStreamReader
-import java.io.OutputStream
-import java.net.HttpURLConnection
-import java.net.URL
-
+import com.github.kittinunf.fuel.core.FuelError
+import com.github.kittinunf.fuel.core.FuelManager
+import com.github.kittinunf.fuel.httpGet
+import com.github.kittinunf.fuel.httpPut
+import com.github.kittinunf.fuel.moshi.moshiDeserializerOf
+import com.github.kittinunf.fuel.moshi.responseObject
+import com.github.kittinunf.result.Result
+import com.squareup.moshi.Moshi
 import pakutoma.miowidget.exception.NotFoundValidTokenException
+import pakutoma.miowidget.exception.UndefinedPlanException
+import java.io.IOException
 
 /**
- * CouponAPI access iijmio api.
- * Created by PAKUTOMA on 2016/09/29.
+ * Created by PAKUTOMA on 2018/02/20.
  */
-class CouponAPI @Throws(NotFoundValidTokenException::class)
-constructor(context: Context) {
-    private val accessToken: String
 
-    val couponData: CouponData
-        @Throws(IOException::class, NotFoundValidTokenException::class)
-        get() {
-            val couponStatus = couponStatus
-            val mapper = ObjectMapper()
-            val statusNode = mapper.readTree(couponStatus)
-
-            var isOnCoupon = false
-            for (hddServiceNode in statusNode.get("couponInfo")) {
-                for (hdoServiceNode in hddServiceNode.get("hdoInfo")) {
-                    isOnCoupon = hdoServiceNode.get("couponUse").asBoolean()
-                }
-            }
-            val traffic = sumTraffic(statusNode)
-            return CouponData(traffic, isOnCoupon)
-        }
-
-    private val couponStatus: String
-        @Throws(IOException::class, NotFoundValidTokenException::class)
-        get() {
-            val url = URL("https://api.iijmio.jp/mobile/d/v1/coupon/")
-            val connection = url.openConnection() as HttpURLConnection
-            connection.requestMethod = "GET"
-            connection.instanceFollowRedirects = false
-            connection.setRequestProperty("X-IIJmio-Developer", "IilCI1xrAgqKrXV9Zt4")
-            connection.setRequestProperty("X-IIJmio-Authorization", accessToken)
-            connection.connect()
-            val result = readStream(connection)
-            connection.disconnect()
-            return result
-        }
+class CouponAPI constructor(developerID: String, accessToken: String) {
 
     init {
-        val preferences = context.getSharedPreferences("iijmio_token", Context.MODE_PRIVATE)
-        val accessToken = preferences.getString("X-IIJmio-Authorization", "")
-        if (accessToken == "") {
-            throw NotFoundValidTokenException("Not found token in preference.")
-        }
-        this.accessToken = accessToken
+        FuelManager.instance.basePath = "https://api.iijmio.jp/mobile/d/v2"
+        FuelManager.instance.baseHeaders = mapOf(
+                "X-IIJmio-Developer" to developerID,
+                "X-IIJmio-Authorization" to accessToken
+        )
     }
 
-    @Throws(IOException::class, NotFoundValidTokenException::class)
-    fun changeCouponStatus(): Boolean {
-        val couponStatus = couponStatus
-        val mapper = ObjectMapper()
-        val getNode = mapper.readTree(couponStatus)
-        val putNode = mapper.createObjectNode()
-        val hdoNode = putNode.putArray("couponInfo").addObject().putArray("hdoInfo")
-        var nowStatus = false
-        for (item in getNode.get("couponInfo").get(0).get("hdoInfo")) {
-            val sim = hdoNode.addObject()
-            val hdoServiceCode = item.get("hdoServiceCode").asText()
-            sim.put("hdoServiceCode", hdoServiceCode)
-            nowStatus = !item.get("couponUse").asBoolean()
-            sim.put("couponUse", nowStatus)
-        }
-        putCouponStatus(putNode)
-        return nowStatus
+    fun fetchCouponInfo(): CouponInfo {
+        val (_, _, result) = "/coupon/".httpGet().responseObject<CouponDataFromJson>()
+        val fetchedData = validateResult(result.component1(), result.component2())
+        return convert(fetchedData)
     }
 
-    private fun sumTraffic(statusNode: JsonNode?): Int {
-        var traffic = 0
-        if (statusNode != null && statusNode.get("returnCode").asText() == "OK") {
-            for (item in statusNode.get("couponInfo").get(0).get("coupon")) {
-                traffic += item.get("volume").asInt()
+    fun changeCouponUse(isOn: Boolean, serviceCodeList: List<String>): Boolean {
+        val couponDataToJson = packJsonClass(isOn, serviceCodeList)
+        val moshi = Moshi.Builder().build()
+        val adapter = moshi.adapter(CouponDataToJson::class.java)
+        val json = adapter.toJson(couponDataToJson)
+        val (_, _, result) = "/coupon/".httpPut()
+                .header("Content-Type" to "application/json")
+                .body(json)
+                .responseObject<ReturnCodeFromJson>(moshiDeserializerOf<ReturnCodeFromJson>())
+        return result is Result.Success
+    }
+
+    private fun packJsonClass(isOn: Boolean, serviceCodeList: List<String>): CouponDataToJson {
+        val typeList = serviceCodeList.groupBy { if (it.substring(0..2) == "hdo") "hdo" else "hda" }
+        val hdoInfoToJsonList = typeList["hdo"]?.map { HdoInfoToJson(it, isOn) }
+                ?: ArrayList<HdoInfoToJson>()
+        val hduInfoToJsonList = typeList["hdu"]?.map { HduInfoToJson(it, isOn) }
+                ?: ArrayList<HduInfoToJson>()
+        val couponInfoToJson = CouponInfoToJson(hdoInfoToJsonList, hduInfoToJsonList)
+        return CouponDataToJson(listOf(couponInfoToJson))
+    }
+
+
+    private fun validateResult(data: CouponDataFromJson?, error: FuelError?): CouponDataFromJson {
+        if (error != null) {
+            if (data?.returnCode == null) {
+                throw IOException()
             }
-            for (item in statusNode.get("couponInfo").get(0).get("hdoInfo")) {
-                traffic += item.get("coupon").get(0).get("volume").asInt()
-            }
-        }
-        return traffic
-    }
-
-    @Throws(IOException::class, NotFoundValidTokenException::class)
-    private fun putCouponStatus(sendJson: ObjectNode) {
-
-        val url = URL("https://api.iijmio.jp/mobile/d/v1/coupon/")
-        val connection = url.openConnection() as HttpURLConnection
-        connection.requestMethod = "PUT"
-        connection.instanceFollowRedirects = false
-        connection.setRequestProperty("X-IIJmio-Developer", "IilCI1xrAgqKrXV9Zt4")
-        connection.setRequestProperty("X-IIJmio-Authorization", accessToken)
-        connection.setRequestProperty("Accept-Language", "jp")
-        connection.doOutput = true
-        connection.setRequestProperty("Content-Type", "application/json")
-        val os = connection.outputStream
-        val mapper = ObjectMapper()
-        mapper.writeValue(os, sendJson)
-        os.close()
-        readStream(connection)
-        connection.disconnect()
-    }
-
-    @Throws(IOException::class, NotFoundValidTokenException::class)
-    private fun readStream(connection: HttpURLConnection): String {
-        val sb = StringBuilder()
-        if (connection.responseCode / 100 == 4 || connection.responseCode / 100 == 5) {
-            val br = BufferedReader(InputStreamReader(connection.errorStream, "UTF-8"))
-            var line: String
-            while (true) {
-                line = br.readLine()
-                if(line == null) {
-                    break
-                }
-                sb.append(line)
-            }
-            br.close()
-            connection.disconnect()
-            if (sb.toString().contains("User Authorization Failure")) {
+            if (data.returnCode.contains("User Authorization Failure")) {
                 throw NotFoundValidTokenException("User Authorization Failure")
             } else {
                 throw IOException()
             }
-        } else {
-            val br = BufferedReader(InputStreamReader(connection.inputStream, "UTF-8"))
-            var line: String
-            while (true) {
-                line = br.readLine()
-                if(line == null) {
-                    break
-                }
-                sb.append(line)
-            }
-            br.close()
-            connection.disconnect()
-            return sb.toString()
+        } else if (data == null) {
+            throw IOException()
         }
+        return data
+    }
+
+    private fun convert(data: CouponDataFromJson): CouponInfo {
+        return CouponInfo(data.couponInfo.map {
+            when (it.plan) {
+                "Family Share", "Minimum Start", "Light Start"
+                -> convertNormalData(it)
+                "Eco Minimum", "Eco Standard"
+                -> convertEcoData(it)
+                else
+                -> throw UndefinedPlanException("Undefined plan name")
+            }
+        })
+    }
+
+    private fun convertNormalData(normalInfo: CouponInfoFromJson): PlanInfo {
+        val serviceCode = normalInfo.hddServiceCode
+        val plan = normalInfo.plan
+        val lineInfoList = ArrayList<LineInfo>()
+        lineInfoList.addAll(normalInfo.hdoInfo?.map {
+            LineInfo(
+                    it.hdoServiceCode,
+                    ServiceType.HDO,
+                    it.number,
+                    it.regulation,
+                    it.couponUse
+            )
+        } ?: emptyList())
+        lineInfoList.addAll(normalInfo.hduInfo?.map {
+            LineInfo(
+                    it.hduServiceCode,
+                    ServiceType.HDU,
+                    it.number,
+                    it.regulation,
+                    it.couponUse
+            )
+        } ?: emptyList())
+        val hdoRemains = normalInfo.hdoInfo?.sumBy { it.coupon!!.sumBy { it.volume } } ?: 0
+        val hduRemains = normalInfo.hduInfo?.sumBy { it.coupon!!.sumBy { it.volume } } ?: 0
+        val normalInfoRemains = normalInfo.coupon?.sumBy { it.volume } ?: 0
+        val remains = hdoRemains + hduRemains + normalInfoRemains
+        return PlanInfo(serviceCode, plan, lineInfoList, remains)
+    }
+
+    private fun convertEcoData(ecoInfo: CouponInfoFromJson): PlanInfo {
+        val serviceCode = ecoInfo.hddServiceCode
+        val plan = ecoInfo.plan
+        val remains = ecoInfo.remains!!
+        val lineInfoList = ArrayList<LineInfo>()
+        lineInfoList.addAll(ecoInfo.hduInfo?.map {
+            LineInfo(
+                    it.hduServiceCode,
+                    ServiceType.HDU,
+                    it.number,
+                    it.regulation,
+                    it.couponUse
+            )
+        } ?: emptyList())
+        return PlanInfo(serviceCode, plan, lineInfoList, remains)
     }
 }
-
-
