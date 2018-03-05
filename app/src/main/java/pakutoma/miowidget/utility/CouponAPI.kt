@@ -8,7 +8,6 @@ import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.getAs
 import com.squareup.moshi.Moshi
 import kotlinx.coroutines.experimental.CommonPool
-import kotlinx.coroutines.experimental.run
 import kotlinx.coroutines.experimental.withContext
 import pakutoma.miowidget.exception.NotFoundValidTokenException
 import pakutoma.miowidget.exception.UndefinedPlanException
