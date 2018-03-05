@@ -33,11 +33,6 @@
             android:exported="false">
         </service>
         <service
-            android:name="pakutoma.miowidget.service.ChangeCoupon"
-            android:enabled="true"
-            android:exported="false">
-        </service>
-        <service
             android:name="pakutoma.miowidget.service.GetTraffic"
             android:enabled="true" />
 
