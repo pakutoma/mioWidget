@@ -2,6 +2,7 @@ package pakutoma.miowidget.activity
 
 import android.app.Activity
 import android.appwidget.AppWidgetManager
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -33,11 +34,15 @@ class OpenBrowserActivity : Activity() {
         val appWidgetManager = AppWidgetManager.getInstance(this)
         val views = RemoteViews(this.packageName, R.layout.switch_widget)
         appWidgetManager.updateAppWidget(appWidgetId, views)
-        Toast.makeText(this, "認証を開始します。", Toast.LENGTH_SHORT).show()
-        val uri = Uri.parse(resources.getText(R.string.authUri).toString())
-        val authIntent = Intent(Intent.ACTION_VIEW, uri)
-        authIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        this.startActivity(authIntent)
+        val preferences = this.getSharedPreferences("iijmio_token", Context.MODE_PRIVATE)
+        val accessToken = preferences.getString("X-IIJmio-Authorization", "")
+        if(accessToken == "") {
+            Toast.makeText(this, "認証を開始します。", Toast.LENGTH_SHORT).show()
+            val uri = Uri.parse(resources.getText(R.string.authUri).toString())
+            val authIntent = Intent(Intent.ACTION_VIEW, uri)
+            authIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            this.startActivity(authIntent)
+        }
         val resultValue = Intent()
         resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
         setResult(Activity.RESULT_OK, resultValue)

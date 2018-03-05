@@ -31,6 +31,9 @@
             android:name="pakutoma.miowidget.service.SwitchCoupon"
             android:enabled="true"
             android:exported="false">
+            <intent-filter>
+                <action android:name="pakutoma.miowidget.widget.SwitchWidget.ACTION_SWITCH_COUPON" />
+            </intent-filter>
         </service>
         <service
             android:name="pakutoma.miowidget.service.GetTraffic"
