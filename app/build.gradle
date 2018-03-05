@@ -6,7 +6,7 @@ android {
     buildToolsVersion '26.0.2'
     defaultConfig {
         applicationId "pakutoma.miowidget"
-        minSdkVersion 14
+        minSdkVersion 21
         versionCode 1
         versionName "1.0"
         targetSdkVersion 26
