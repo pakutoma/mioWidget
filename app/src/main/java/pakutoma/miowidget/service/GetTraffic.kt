@@ -48,7 +48,7 @@ class GetTraffic : JobService() {
             } catch (e: IOException) {
                 sendCallback(true, false)
             }
-            jobFinished(params, false)
+            jobFinished(params, true)
         }
         return true
     }

@@ -34,6 +34,7 @@
         </service>
         <service
             android:name="pakutoma.miowidget.service.GetTraffic"
+            android:permission="android.permission.BIND_JOB_SERVICE"
             android:enabled="true" />
 
         <activity

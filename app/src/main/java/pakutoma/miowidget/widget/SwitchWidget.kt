@@ -1,7 +1,5 @@
 package pakutoma.miowidget.widget
 
-import android.app.AlarmManager
-import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.ComponentName
@@ -16,20 +14,26 @@ import java.util.Locale
 import pakutoma.miowidget.R
 import pakutoma.miowidget.service.GetTraffic
 import pakutoma.miowidget.service.SwitchCoupon
+import android.app.job.JobInfo
+import android.app.job.JobScheduler
 
 /**
  * Implementation of App Widget functionality.
  */
 class SwitchWidget : AppWidgetProvider() {
+    companion object {
+        private const val ACTION_WIDGET_ENABLE = "pakutoma.miowidget.widget.SwitchWidget.ACTION_WIDGET_ENABLE"
+        private const val ACTION_WAIT_CHANGE_SWITCH = "pakutoma.miowidget.widget.SwitchWidget.ACTION_WAIT_CHANGE_SWITCH"
+
+        private const val ACTION_CALLBACK_GET_TRAFFIC = "pakutoma.miowidget.widget.SwitchWidget.ACTION_CALLBACK_GET_TRAFFIC"
+        private const val ACTION_CALLBACK_CHANGE_COUPON = "pakutoma.miowidget.widget.SwitchWidget.ACTION_CALLBACK_CHANGE_COUPON"
+        private const val JOB_ID = 1
+
+        private var isCouponEnable: Boolean = true
+    }
 
     override fun onReceive(context: Context, intent: Intent) {
         super.onReceive(context, intent)
-        if (intent.action == ACTION_GET_TRAFFIC) {
-            setAlarm(context)
-            val getTrafficIntent = Intent(context, GetTraffic::class.java)
-            context.startService(getTrafficIntent)
-        }
-
         if (intent.action == ACTION_CALLBACK_GET_TRAFFIC) {
             updateTraffic(context, intent)
         }
@@ -43,7 +47,6 @@ class SwitchWidget : AppWidgetProvider() {
         }
 
         if (intent.action == Intent.ACTION_BOOT_COMPLETED || intent.action == Intent.ACTION_MY_PACKAGE_REPLACED || intent.action == ACTION_WIDGET_ENABLE) {
-            setAlarm(context)
             val getTrafficIntent = Intent(context, GetTraffic::class.java)
             context.startService(getTrafficIntent)
             val switchCouponIntent = Intent(context, SwitchCoupon::class.java)
@@ -51,26 +54,7 @@ class SwitchWidget : AppWidgetProvider() {
         }
     }
 
-    private fun setAlarm(context: Context) {
-        val alarmIntent = Intent(context, SwitchWidget::class.java)
-        alarmIntent.action = ACTION_GET_TRAFFIC
-        val operation = PendingIntent.getBroadcast(context, 0, alarmIntent, 0)
-        val am = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val interval = (1000 * 60 * 5).toLong()
-        val nextAlarm = System.currentTimeMillis() + interval
-        am.set(AlarmManager.RTC, nextAlarm, operation)
-    }
-
-    private fun cancelAlarm(context: Context) {
-        val alarmIntent = Intent(context, SwitchWidget::class.java)
-        alarmIntent.action = ACTION_GET_TRAFFIC
-        val operation = PendingIntent.getBroadcast(context, 0, alarmIntent, 0)
-        val am = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        am.cancel(operation)
-    }
-
     override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
-        setAlarm(context)
         val getTrafficIntent = Intent(context, GetTraffic::class.java)
         context.startService(getTrafficIntent)
         val switchCouponIntent = Intent(context, SwitchCoupon::class.java)
@@ -139,29 +123,22 @@ class SwitchWidget : AppWidgetProvider() {
         remoteViews.setViewVisibility(R.id.coupon_switch_top_start, if (isCouponEnable) View.INVISIBLE else View.VISIBLE)
         remoteViews.setViewVisibility(R.id.coupon_switch_top_on_start, View.INVISIBLE)
         remoteViews.setViewVisibility(R.id.coupon_switch_top_end, View.INVISIBLE)
-
     }
 
     override fun onEnabled(context: Context) {
-
+        val jobScheduler = context.getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
+        val jobInfo = JobInfo.Builder(JOB_ID, ComponentName(context,GetTraffic::class.java))
+                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+                .setPeriodic((1000 * 60 * 5).toLong())
+                .setPersisted(true)
+                .build()
+        jobScheduler.schedule(jobInfo)
     }
 
     override fun onDisabled(context: Context) {
-        cancelAlarm(context)
+        val jobScheduler = context.getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
+        jobScheduler.cancel(JOB_ID)
         super.onDisabled(context)
-    }
-
-    companion object {
-
-
-        private val ACTION_GET_TRAFFIC = "pakutoma.miowidget.widget.SwitchWidget.ACTION_GET_TRAFFIC"
-        private val ACTION_WIDGET_ENABLE = "pakutoma.miowidget.widget.SwitchWidget.ACTION_WIDGET_ENABLE"
-        private val ACTION_WAIT_CHANGE_SWITCH = "pakutoma.miowidget.widget.SwitchWidget.ACTION_WAIT_CHANGE_SWITCH"
-
-        private val ACTION_CALLBACK_GET_TRAFFIC = "pakutoma.miowidget.widget.SwitchWidget.ACTION_CALLBACK_GET_TRAFFIC"
-        private val ACTION_CALLBACK_CHANGE_COUPON = "pakutoma.miowidget.widget.SwitchWidget.ACTION_CALLBACK_CHANGE_COUPON"
-
-        private var isCouponEnable: Boolean = true
     }
 }
 
