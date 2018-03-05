@@ -9,7 +9,6 @@ import pakutoma.miowidget.R
 
 import java.io.IOException
 import android.app.job.JobService
-import kotlinx.coroutines.experimental.android.UI
 
 import pakutoma.miowidget.utility.CouponAPI
 import pakutoma.miowidget.exception.NotFoundValidTokenException
