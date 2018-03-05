@@ -1,5 +1,8 @@
 package pakutoma.miowidget.utility
 
+import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.experimental.runBlocking
 import org.junit.Test
 
 import org.junit.Assert.*
@@ -12,14 +15,18 @@ class CouponAPITest {
     private val developerID = "IilCI1xrAgqKrXV9Zt4"
     @Test
     fun fetchCouponInfo() {
-        val coupon = CouponAPI(developerID,accessToken)
-        coupon.fetchCouponInfo()
+        runBlocking {
+            val coupon = CouponAPI(developerID, accessToken)
+            println(coupon.fetchCouponInfo())
+        }
     }
 
     @Test
     fun changeCouponUse() {
-        val coupon = CouponAPI(developerID,accessToken)
-        assertTrue(coupon.changeCouponUse(true, listOf("hdo22456045")))
+        runBlocking {
+            val coupon = CouponAPI(developerID, accessToken)
+            assertTrue(coupon.changeCouponUse(true, listOf("hdo22456045")).returnCode.equals("OK"))
+        }
     }
 
 }

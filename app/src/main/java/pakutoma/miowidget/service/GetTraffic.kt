@@ -3,6 +3,8 @@ package pakutoma.miowidget.service
 import android.app.IntentService
 import android.content.Context
 import android.content.Intent
+import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.experimental.runBlocking
 import pakutoma.miowidget.R
 
 import java.io.IOException
@@ -23,12 +25,12 @@ class GetTraffic : IntentService("GetTraffic") {
         val couponInfo: CouponInfo
         try {
             val developerID = resources.getText(R.string.developerID).toString()
-            val accessToken = preferences.getString("X-IIJmio-Authorization","")
-            if(accessToken == "") {
+            val accessToken = preferences.getString("X-IIJmio-Authorization", "")
+            if (accessToken == "") {
                 throw NotFoundValidTokenException("Not found token in preference.")
             }
-            val coupon = CouponAPI(developerID,accessToken)
-            couponInfo = coupon.fetchCouponInfo()
+            val coupon = CouponAPI(developerID, accessToken)
+            couponInfo = runBlocking { coupon.fetchCouponInfo() }
         } catch (e: NotFoundValidTokenException) {
             val editor = preferences.edit()
             editor.putString("X-IIJmio-Authorization", "")
@@ -42,7 +44,7 @@ class GetTraffic : IntentService("GetTraffic") {
         }
 
         val isOn = couponInfo.planInfoList[0].lineInfoList[0].couponUse
-        val remains = couponInfo.planInfoList.sumBy{it.remains}
+        val remains = couponInfo.planInfoList.sumBy { it.remains }
 
         sendCallback(true, true, remains, isOn)
     }
