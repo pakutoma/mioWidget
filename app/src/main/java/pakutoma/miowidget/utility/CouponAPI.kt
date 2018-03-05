@@ -1,16 +1,18 @@
 package pakutoma.miowidget.utility
 
-import com.github.kittinunf.fuel.core.FuelError
 import com.github.kittinunf.fuel.core.FuelManager
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.httpPut
-import com.github.kittinunf.fuel.moshi.moshiDeserializerOf
 import com.github.kittinunf.fuel.moshi.responseObject
 import com.github.kittinunf.result.Result
+import com.github.kittinunf.result.getAs
 import com.squareup.moshi.Moshi
+import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.run
+import kotlinx.coroutines.experimental.withContext
 import pakutoma.miowidget.exception.NotFoundValidTokenException
 import pakutoma.miowidget.exception.UndefinedPlanException
-import java.io.IOException
+import kotlin.coroutines.experimental.suspendCoroutine
 
 /**
  * Created by PAKUTOMA on 2018/02/20.
@@ -26,22 +28,51 @@ class CouponAPI constructor(developerID: String, accessToken: String) {
         )
     }
 
-    fun fetchCouponInfo(): CouponInfo {
-        val (_, _, result) = "/coupon/".httpGet().responseObject<CouponDataFromJson>()
-        val fetchedData = validateResult(result.component1(), result.component2())
+    suspend fun fetchCouponInfo(): CouponInfo {
+        val fetchedData = withContext(CommonPool) { sendHttpGetCouponInfo() }
         return convert(fetchedData)
     }
 
-    fun changeCouponUse(isOn: Boolean, serviceCodeList: List<String>): Boolean {
+    private suspend fun sendHttpGetCouponInfo(): CouponDataFromJson = suspendCoroutine { cont ->
+        "/coupon/".httpGet()
+                .responseObject<CouponDataFromJson> { _, _, result ->
+                    when (result) {
+                        is Result.Failure -> {
+                            val (data, _) = result
+                            if (data?.returnCode?.contains("User Authorization Failure") == true) {
+                                cont.resumeWithException(NotFoundValidTokenException("User Authorization Failure"))
+                            }
+                            cont.resumeWithException(result.getAs()!!)
+                        }
+                        is Result.Success -> {
+                            cont.resume(result.getAs()!!)
+                        }
+                    }
+                }
+    }
+
+    suspend fun changeCouponUse(isOn: Boolean, serviceCodeList: List<String>): ReturnCodeFromJson {
         val couponDataToJson = packJsonClass(isOn, serviceCodeList)
         val moshi = Moshi.Builder().build()
         val adapter = moshi.adapter(CouponDataToJson::class.java)
         val json = adapter.toJson(couponDataToJson)
-        val (_, _, result) = "/coupon/".httpPut()
+        return withContext(CommonPool) { sendHttpPutCouponStatus(json) }
+    }
+
+    private suspend fun sendHttpPutCouponStatus(json: String): ReturnCodeFromJson = suspendCoroutine { cont ->
+        "/coupon/".httpPut()
                 .header("Content-Type" to "application/json")
                 .body(json)
-                .responseObject<ReturnCodeFromJson>(moshiDeserializerOf<ReturnCodeFromJson>())
-        return result is Result.Success
+                .responseObject<ReturnCodeFromJson> { _, _, result ->
+                    when (result) {
+                        is Result.Failure -> {
+                            cont.resumeWithException(result.getAs()!!)
+                        }
+                        is Result.Success -> {
+                            cont.resume(result.getAs()!!)
+                        }
+                    }
+                }
     }
 
     private fun packJsonClass(isOn: Boolean, serviceCodeList: List<String>): CouponDataToJson {
@@ -52,23 +83,6 @@ class CouponAPI constructor(developerID: String, accessToken: String) {
                 ?: ArrayList<HduInfoToJson>()
         val couponInfoToJson = CouponInfoToJson(hdoInfoToJsonList, hduInfoToJsonList)
         return CouponDataToJson(listOf(couponInfoToJson))
-    }
-
-
-    private fun validateResult(data: CouponDataFromJson?, error: FuelError?): CouponDataFromJson {
-        if (error != null) {
-            if (data?.returnCode == null) {
-                throw IOException()
-            }
-            if (data.returnCode.contains("User Authorization Failure")) {
-                throw NotFoundValidTokenException("User Authorization Failure")
-            } else {
-                throw IOException()
-            }
-        } else if (data == null) {
-            throw IOException()
-        }
-        return data
     }
 
     private fun convert(data: CouponDataFromJson): CouponInfo {

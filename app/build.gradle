@@ -44,6 +44,13 @@ dependencies {
     compile "org.jetbrains.kotlinx:kotlinx-coroutines-core:0.22.3"
     compile "org.jetbrains.kotlinx:kotlinx-coroutines-android:0.22.3"
 }
+
 repositories {
     mavenCentral()
+}
+
+kotlin {
+    experimental {
+        coroutines "enable"
+    }
 }
