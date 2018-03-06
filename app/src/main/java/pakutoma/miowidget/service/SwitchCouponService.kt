@@ -1,5 +1,7 @@
 package pakutoma.miowidget.service
 
+import android.annotation.TargetApi
+import android.app.Notification
 import android.app.Service
 import android.content.Context
 import android.content.Intent
@@ -16,14 +18,28 @@ import pakutoma.miowidget.utility.CouponAPI
 import pakutoma.miowidget.widget.changeToWaitMode
 import pakutoma.miowidget.widget.setSwitchPendingIntent
 import pakutoma.miowidget.widget.updateSwitchStatus
+import android.os.Build
+
 
 /**
  * Created by PAKUTOMA on 2016/12/10.
  */
-class SwitchCoupon : Service() {
+class SwitchCouponService : Service() {
 
     companion object {
-        private const val ACTION_SWITCH_COUPON = "pakutoma.miowidget.widget.SwitchWidget.ACTION_SWITCH_COUPON"
+        private const val SWITCH_COUPON_NOTIFICATION_ID = 1
+    }
+
+    override fun onCreate() {
+        super.onCreate()
+        @TargetApi(Build.VERSION_CODES.O)
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val notification = Notification
+                    .Builder(applicationContext, "switch_service")
+                    .setContentTitle(applicationContext.getString(R.string.switch_notification))
+                    .build()
+            startForeground(SWITCH_COUPON_NOTIFICATION_ID, notification)
+        }
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -78,7 +94,6 @@ class SwitchCoupon : Service() {
             }
             editor.putLong("last_click_time", System.currentTimeMillis())
             editor.apply()
-            setSwitchPendingIntent(applicationContext)
             stopSelf()
         }
         return Service.START_NOT_STICKY

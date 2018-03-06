@@ -1,21 +1,18 @@
 package pakutoma.miowidget.activity
 
+import android.annotation.TargetApi
 import android.app.Activity
-import android.app.AlarmManager
-import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
 
-import java.util.regex.Matcher
 import java.util.regex.Pattern
 
 import pakutoma.miowidget.R
-import pakutoma.miowidget.service.GetTraffic
-import pakutoma.miowidget.widget.SwitchWidget
+import pakutoma.miowidget.service.FetchRemainsService
 
 class AuthActivity : Activity() {
 
@@ -41,9 +38,13 @@ class AuthActivity : Activity() {
             homeIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
             startActivity(homeIntent)
 
-            // TODO: Service呼び出し部分書き換え
-            val getTrafficIntent = Intent(this, GetTraffic::class.java)
-            this.startService(getTrafficIntent)
+            val fetchRemainsIntent = Intent(applicationContext, FetchRemainsService::class.java)
+            @TargetApi(Build.VERSION_CODES.O)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                startForegroundService(fetchRemainsIntent)
+            } else {
+                startService(fetchRemainsIntent)
+            }
 
             Toast.makeText(this, "認証が完了しました。", Toast.LENGTH_SHORT).show()
         }
