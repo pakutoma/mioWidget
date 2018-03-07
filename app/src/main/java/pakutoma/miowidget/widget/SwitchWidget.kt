@@ -64,7 +64,7 @@ class SwitchWidget : AppWidgetProvider() {
         val jobScheduler = context.getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
         val jobInfo = JobInfo.Builder(JOB_ID, ComponentName(context, FetchRemainsJobService::class.java))
                 .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
-                .setPeriodic((1000 * 60 * 5).toLong())
+                .setPeriodic((1000 * 60 * 15).toLong())
                 .setPersisted(true)
                 .build()
         jobScheduler.schedule(jobInfo)

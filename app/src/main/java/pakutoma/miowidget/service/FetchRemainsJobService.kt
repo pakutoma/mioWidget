@@ -54,7 +54,7 @@ class FetchRemainsJobService : JobService() {
                     updateSwitchStatus(applicationContext, true, true)
                 }
             }
-            jobFinished(params, false)
+            jobFinished(params, true)
         }
         return true
     }
