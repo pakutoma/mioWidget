@@ -21,8 +21,8 @@ import android.app.job.JobScheduler
 import android.app.NotificationManager
 import android.app.NotificationChannel
 import android.os.Build
-import android.widget.Toast
 import pakutoma.miowidget.service.FetchRemainsService
+import java.util.concurrent.TimeUnit
 
 
 /**
@@ -32,12 +32,29 @@ import pakutoma.miowidget.service.FetchRemainsService
 class SwitchWidget : AppWidgetProvider() {
     companion object {
         private const val JOB_ID = 1
+        private const val NOTIFICATION_CHANNEL_ID = "switch_service"
+    }
+
+    override fun onReceive(context: Context, intent: Intent) {
+        super.onReceive(context, intent)
+        if (intent.action == Intent.ACTION_BOOT_COMPLETED) {
+            startFetchRemainsService(context)
+        }
+        if(intent.action == Intent.ACTION_MY_PACKAGE_REPLACED) {
+            registerFetchRemainsJobService(context)
+            registerNotificationChannel(context)
+            startFetchRemainsService(context)
+        }
+    }
+
+    override fun onEnabled(context: Context) {
+        super.onEnabled(context)
+        registerFetchRemainsJobService(context)
+        registerNotificationChannel(context)
     }
 
     override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
         super.onUpdate(context, appWidgetManager, appWidgetIds)
-        registerFetchRemainsJobService(context)
-        registerNotificationChannel(context)
         startFetchRemainsService(context)
     }
 
@@ -51,23 +68,28 @@ class SwitchWidget : AppWidgetProvider() {
         @TargetApi(Build.VERSION_CODES.O)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            val channel = NotificationChannel(
-                    "switch_service",
-                    context.getString(R.string.switch_service),
-                    NotificationManager.IMPORTANCE_MIN
-            )
-            manager.createNotificationChannel(channel)
+            if(manager.getNotificationChannel(NOTIFICATION_CHANNEL_ID) == null) {
+                val channel = NotificationChannel(
+                        NOTIFICATION_CHANNEL_ID,
+                        context.getString(R.string.switch_service),
+                        NotificationManager.IMPORTANCE_MIN
+                )
+                manager.createNotificationChannel(channel)
+            }
         }
     }
 
     private fun registerFetchRemainsJobService(context: Context) {
         val jobScheduler = context.getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
-        val jobInfo = JobInfo.Builder(JOB_ID, ComponentName(context, FetchRemainsJobService::class.java))
-                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
-                .setPeriodic((1000 * 60 * 15).toLong())
-                .setPersisted(true)
-                .build()
-        jobScheduler.schedule(jobInfo)
+        val jobs = jobScheduler.allPendingJobs
+        if(jobs?.any { it.id == JOB_ID } != true) {
+            val jobInfo = JobInfo.Builder(JOB_ID, ComponentName(context, FetchRemainsJobService::class.java))
+                    .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+                    .setPeriodic(TimeUnit.MINUTES.toMillis(15))
+                    .setPersisted(true)
+                    .build()
+            jobScheduler.schedule(jobInfo)
+        }
     }
 
     private fun startFetchRemainsService(context: Context) {

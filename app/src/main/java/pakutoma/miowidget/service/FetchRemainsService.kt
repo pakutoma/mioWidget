@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.IBinder
+import com.github.kittinunf.fuel.core.HttpException
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.withContext
@@ -20,6 +21,7 @@ import java.io.IOException
 
 /**
  * Created by PAKUTOMA on 2018/03/06.
+ * fetch remains service
  */
 class FetchRemainsService : Service() {
 
@@ -65,11 +67,11 @@ class FetchRemainsService : Service() {
                 editor.putString("X-IIJmio-Authorization", "")
                 editor.apply()
                 withContext(UI) {
-                    updateSwitchStatus(applicationContext, false, true)
+                    updateSwitchStatus(applicationContext, false, false)
                 }
-            } catch (e: IOException) {
+            } catch (e: HttpException) {
                 withContext(UI) {
-                    updateSwitchStatus(applicationContext, true, true)
+                    updateSwitchStatus(applicationContext, true, false)
                 }
             }
             stopSelf()

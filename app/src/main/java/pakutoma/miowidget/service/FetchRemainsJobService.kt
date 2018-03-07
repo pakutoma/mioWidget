@@ -7,6 +7,7 @@ import pakutoma.miowidget.R
 
 import java.io.IOException
 import android.app.job.JobService
+import com.github.kittinunf.fuel.core.HttpException
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.withContext
 
@@ -47,11 +48,11 @@ class FetchRemainsJobService : JobService() {
                 editor.putString("X-IIJmio-Authorization", "")
                 editor.apply()
                 withContext(UI) {
-                    updateSwitchStatus(applicationContext, false, true)
+                    updateSwitchStatus(applicationContext, false, false)
                 }
-            } catch (e: IOException) {
+            } catch (e: HttpException) {
                 withContext(UI) {
-                    updateSwitchStatus(applicationContext, true, true)
+                    updateSwitchStatus(applicationContext, true, false)
                 }
             }
             jobFinished(params, true)

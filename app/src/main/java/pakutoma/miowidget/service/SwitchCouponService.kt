@@ -19,10 +19,12 @@ import pakutoma.miowidget.widget.changeToWaitMode
 import pakutoma.miowidget.widget.setSwitchPendingIntent
 import pakutoma.miowidget.widget.updateSwitchStatus
 import android.os.Build
+import com.github.kittinunf.fuel.core.HttpException
 
 
 /**
  * Created by PAKUTOMA on 2016/12/10.
+ * switch coupon service
  */
 class SwitchCouponService : Service() {
 
@@ -86,7 +88,7 @@ class SwitchCouponService : Service() {
                     sendToast(false)
                     updateSwitchStatus(applicationContext, false, false)
                 }
-            } catch (e: Exception) {
+            } catch (e: HttpException) {
                 withContext(UI) {
                     sendToast(true,false)
                     updateSwitchStatus(applicationContext, true, false)
