@@ -21,6 +21,7 @@ import android.app.job.JobScheduler
 import android.app.NotificationManager
 import android.app.NotificationChannel
 import android.os.Build
+import android.widget.Toast
 import pakutoma.miowidget.service.FetchRemainsService
 
 
@@ -33,23 +34,11 @@ class SwitchWidget : AppWidgetProvider() {
         private const val JOB_ID = 1
     }
 
-    override fun onReceive(context: Context, intent: Intent) {
-        super.onReceive(context, intent)
-        if (intent.action == Intent.ACTION_BOOT_COMPLETED || intent.action == Intent.ACTION_MY_PACKAGE_REPLACED) {
-            registerFetchRemainsJobService(context)
-            registerNotificationChannel(context)
-            startFetchRemainsService(context)
-        }
-    }
-
     override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
         super.onUpdate(context, appWidgetManager, appWidgetIds)
-        startFetchRemainsService(context)
-    }
-
-    override fun onEnabled(context: Context) {
         registerFetchRemainsJobService(context)
         registerNotificationChannel(context)
+        startFetchRemainsService(context)
     }
 
     override fun onDisabled(context: Context) {

@@ -8,6 +8,7 @@ import pakutoma.miowidget.R
 import java.io.IOException
 import android.app.job.JobService
 import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.withContext
 
 import pakutoma.miowidget.utility.CouponAPI
 import pakutoma.miowidget.exception.NotFoundValidTokenException
@@ -22,7 +23,7 @@ import pakutoma.miowidget.widget.updateSwitchStatus
 class FetchRemainsJobService : JobService() {
 
     override fun onStartJob(params: JobParameters?): Boolean {
-        launch(UI) {
+        launch {
             val preferences = getSharedPreferences("iijmio_token", Context.MODE_PRIVATE)
             val couponInfo: CouponInfo
             val developerID = resources.getText(R.string.developerID).toString()
@@ -38,16 +39,22 @@ class FetchRemainsJobService : JobService() {
                 val editor = preferences.edit()
                 editor.putBoolean("is_coupon_enable", isCouponEnable)
                 editor.apply()
-                updateSwitchStatus(applicationContext,true,true,remains,isCouponEnable)
+                withContext(UI) {
+                    updateSwitchStatus(applicationContext, true, true, remains, isCouponEnable)
+                }
             } catch (e: NotFoundValidTokenException) {
                 val editor = preferences.edit()
                 editor.putString("X-IIJmio-Authorization", "")
                 editor.apply()
-                updateSwitchStatus(applicationContext,false,true)
+                withContext(UI) {
+                    updateSwitchStatus(applicationContext, false, true)
+                }
             } catch (e: IOException) {
-                updateSwitchStatus(applicationContext,true,true)
+                withContext(UI) {
+                    updateSwitchStatus(applicationContext, true, true)
+                }
             }
-            jobFinished(params, true)
+            jobFinished(params, false)
         }
         return true
     }
