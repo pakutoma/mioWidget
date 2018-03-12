@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceScreen
-        android:title="使い方"
-        android:summary="このアプリはウィジェット専用です。ホーム画面にウィジェットを設定してお使いください。" />
-    <pakutoma.miowidget.activity.AboutDialog
-        android:title="このアプリについて"
-        android:key="about" />
-    <pakutoma.miowidget.activity.LicenseDialog
-        android:title="オープンソースライセンス"
-        android:key="openSourceLicense" />
+        android:summary="このアプリはウィジェット専用です。ホーム画面にウィジェットを設定してお使いください。"
+        android:title="使い方" />
+    <Preference
+        android:key="widget_settings"
+        android:title="@string/widget_settings">
+        <intent
+            android:action="android.intent.action.MAIN"
+            android:targetClass="pakutoma.miowidget.activity.WidgetSettingsActivity"
+            android:targetPackage="pakutoma.miowidget" />
+    </Preference>
+    <pakutoma.miowidget.activity.AboutDialog android:title="このアプリについて" />
+    <pakutoma.miowidget.activity.LicenseDialog android:title="オープンソースライセンス" />
 </PreferenceScreen>

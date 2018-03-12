@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+    <PreferenceCategory
+        android:title="@string/show_remains_plans"
+        android:key="show_remains_plans">
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:title="@string/switch_lines"
+        android:key="switch_lines">
+    </PreferenceCategory>
+</PreferenceScreen>
