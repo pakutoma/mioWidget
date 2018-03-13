@@ -1,8 +1,8 @@
-package pakutoma.miowidget.activity
+package pakutoma.iijmiocouponwidget.activity
 
 import android.os.Bundle
 
-import pakutoma.miowidget.R
+import pakutoma.iijmiocouponwidget.R
 import android.preference.PreferenceFragment
 import android.support.v7.app.AppCompatActivity
 

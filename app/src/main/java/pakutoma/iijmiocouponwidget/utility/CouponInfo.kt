@@ -1,4 +1,4 @@
-package pakutoma.miowidget.utility
+package pakutoma.iijmiocouponwidget.utility
 
 /**
  * CouponAPI用データクラス

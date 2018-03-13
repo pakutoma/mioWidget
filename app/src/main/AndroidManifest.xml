@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="pakutoma.miowidget">
+    package="pakutoma.iijmiocouponwidget">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
@@ -13,7 +13,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <receiver
-            android:name="pakutoma.miowidget.widget.SwitchWidget"
+            android:name="pakutoma.iijmiocouponwidget.widget.SwitchWidget"
             android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
@@ -27,22 +27,22 @@
         </receiver>
 
         <service
-            android:name="pakutoma.miowidget.service.SwitchCouponService"
+            android:name="pakutoma.iijmiocouponwidget.service.SwitchCouponService"
             android:enabled="true"
             android:exported="false">
         </service>
         <service
-            android:name="pakutoma.miowidget.service.FetchRemainsService"
+            android:name="pakutoma.iijmiocouponwidget.service.FetchRemainsService"
             android:enabled="true"
             android:exported="false">
         </service>
         <service
-            android:name="pakutoma.miowidget.service.FetchRemainsJobService"
+            android:name="pakutoma.iijmiocouponwidget.service.FetchRemainsJobService"
             android:permission="android.permission.BIND_JOB_SERVICE"
             android:enabled="true" />
 
         <activity
-            android:name="pakutoma.miowidget.activity.AuthActivity"
+            android:name="pakutoma.iijmiocouponwidget.activity.AuthActivity"
             android:launchMode="singleTask"
             android:theme="@android:style/Theme.Translucent.NoTitleBar">
             <intent-filter>
@@ -53,23 +53,23 @@
 
                 <data
                     android:host="callback"
-                    android:scheme="pakutoma.miowidget" />
+                    android:scheme="pakutoma.iijmiocouponwidget" />
             </intent-filter>
         </activity>
-        <activity android:name="pakutoma.miowidget.activity.MainSettingsActivity"
+        <activity android:name="pakutoma.iijmiocouponwidget.activity.MainSettingsActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="pakutoma.miowidget.activity.WidgetSettingsActivity"
+        <activity android:name="pakutoma.iijmiocouponwidget.activity.WidgetSettingsActivity"
             android:label="@string/widget_settings">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
         </activity>
-        <activity android:name="pakutoma.miowidget.activity.OpenBrowserActivity"
+        <activity android:name="pakutoma.iijmiocouponwidget.activity.OpenBrowserActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />

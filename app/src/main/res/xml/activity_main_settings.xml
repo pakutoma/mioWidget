@@ -9,9 +9,9 @@
         android:title="@string/widget_settings">
         <intent
             android:action="android.intent.action.MAIN"
-            android:targetClass="pakutoma.miowidget.activity.WidgetSettingsActivity"
-            android:targetPackage="pakutoma.miowidget" />
+            android:targetClass="pakutoma.iijmiocouponwidget.activity.WidgetSettingsActivity"
+            android:targetPackage="pakutoma.iijmiocouponwidget" />
     </Preference>
-    <pakutoma.miowidget.activity.AboutDialog android:title="このアプリについて" />
-    <pakutoma.miowidget.activity.LicenseDialog android:title="オープンソースライセンス" />
+    <pakutoma.iijmiocouponwidget.activity.AboutDialog android:title="このアプリについて" />
+    <pakutoma.iijmiocouponwidget.activity.LicenseDialog android:title="オープンソースライセンス" />
 </PreferenceScreen>

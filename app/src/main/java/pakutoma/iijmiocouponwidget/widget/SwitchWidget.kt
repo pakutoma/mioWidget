@@ -1,4 +1,4 @@
-package pakutoma.miowidget.widget
+package pakutoma.iijmiocouponwidget.widget
 
 import android.annotation.TargetApi
 import android.app.PendingIntent
@@ -13,15 +13,15 @@ import android.widget.RemoteViews
 
 import java.util.Locale
 
-import pakutoma.miowidget.R
-import pakutoma.miowidget.service.FetchRemainsJobService
-import pakutoma.miowidget.service.SwitchCouponService
+import pakutoma.iijmiocouponwidget.R
+import pakutoma.iijmiocouponwidget.service.FetchRemainsJobService
+import pakutoma.iijmiocouponwidget.service.SwitchCouponService
 import android.app.job.JobInfo
 import android.app.job.JobScheduler
 import android.app.NotificationManager
 import android.app.NotificationChannel
 import android.os.Build
-import pakutoma.miowidget.service.FetchRemainsService
+import pakutoma.iijmiocouponwidget.service.FetchRemainsService
 import java.util.concurrent.TimeUnit
 
 

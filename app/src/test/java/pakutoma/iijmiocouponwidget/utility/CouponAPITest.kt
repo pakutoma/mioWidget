@@ -1,4 +1,4 @@
-package pakutoma.miowidget.utility
+package pakutoma.iijmiocouponwidget.utility
 
 import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.launch

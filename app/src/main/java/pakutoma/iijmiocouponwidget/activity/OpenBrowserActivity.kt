@@ -1,4 +1,4 @@
-package pakutoma.miowidget.activity
+package pakutoma.iijmiocouponwidget.activity
 
 import android.app.Activity
 import android.appwidget.AppWidgetManager
@@ -9,7 +9,7 @@ import android.os.Bundle
 import android.widget.RemoteViews
 import android.widget.Toast
 
-import pakutoma.miowidget.R
+import pakutoma.iijmiocouponwidget.R
 
 /**
  * 認証画面をブラウザで開くためのActivity

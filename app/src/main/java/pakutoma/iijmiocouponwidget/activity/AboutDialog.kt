@@ -1,4 +1,8 @@
-package pakutoma.miowidget.activity
+package pakutoma.iijmiocouponwidget.activity
+
+/**
+ * Created by PAKUTOMA on 2016/12/04.
+ */
 
 import android.content.Context
 import android.preference.DialogPreference
@@ -10,7 +14,7 @@ import android.webkit.WebViewClient
 /**
  * Created by PAKUTOMA on 2016/12/04.
  */
-class LicenseDialog : DialogPreference {
+class AboutDialog : DialogPreference {
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
         negativeButtonText = null
     }
@@ -20,10 +24,9 @@ class LicenseDialog : DialogPreference {
     }
 
     override fun onCreateDialogView(): View {
-
         val webView = WebView(this.context)
         webView.webViewClient = WebViewClient()
-        webView.loadUrl("file:///android_asset/licenses.html")
+        webView.loadUrl("file:///android_asset/about.html")
         return webView
     }
 }
