@@ -1,4 +1,4 @@
-package pakutoma.miowidget.utility
+package pakutoma.iijmiocouponwidget.utility
 
 import com.github.kittinunf.fuel.core.FuelManager
 import com.github.kittinunf.fuel.httpGet
@@ -9,8 +9,8 @@ import com.github.kittinunf.result.getAs
 import com.squareup.moshi.Moshi
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.withContext
-import pakutoma.miowidget.exception.NotFoundValidTokenException
-import pakutoma.miowidget.exception.UndefinedPlanException
+import pakutoma.iijmiocouponwidget.exception.NotFoundValidTokenException
+import pakutoma.iijmiocouponwidget.exception.UndefinedPlanException
 import kotlin.coroutines.experimental.suspendCoroutine
 
 /**

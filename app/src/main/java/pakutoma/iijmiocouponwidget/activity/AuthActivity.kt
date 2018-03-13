@@ -1,4 +1,4 @@
-package pakutoma.miowidget.activity
+package pakutoma.iijmiocouponwidget.activity
 
 import android.annotation.TargetApi
 import android.app.Activity
@@ -11,8 +11,8 @@ import android.widget.Toast
 
 import java.util.regex.Pattern
 
-import pakutoma.miowidget.R
-import pakutoma.miowidget.service.FetchRemainsService
+import pakutoma.iijmiocouponwidget.R
+import pakutoma.iijmiocouponwidget.service.FetchRemainsService
 
 class AuthActivity : Activity() {
 

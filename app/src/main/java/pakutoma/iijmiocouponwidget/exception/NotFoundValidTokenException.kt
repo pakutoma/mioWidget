@@ -1,4 +1,4 @@
-package pakutoma.miowidget.exception
+package pakutoma.iijmiocouponwidget.exception
 
 /**
  * Created by PAKUTOMA on 2016/12/10.

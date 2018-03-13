@@ -1,9 +1,9 @@
-package pakutoma.miowidget.service
+package pakutoma.iijmiocouponwidget.service
 
 import android.app.job.JobParameters
 import android.content.Context
 import kotlinx.coroutines.experimental.launch
-import pakutoma.miowidget.R
+import pakutoma.iijmiocouponwidget.R
 
 import java.io.IOException
 import android.app.job.JobService
@@ -11,10 +11,10 @@ import com.github.kittinunf.fuel.core.HttpException
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.withContext
 
-import pakutoma.miowidget.utility.CouponAPI
-import pakutoma.miowidget.exception.NotFoundValidTokenException
-import pakutoma.miowidget.utility.CouponInfo
-import pakutoma.miowidget.widget.updateSwitchStatus
+import pakutoma.iijmiocouponwidget.utility.CouponAPI
+import pakutoma.iijmiocouponwidget.exception.NotFoundValidTokenException
+import pakutoma.iijmiocouponwidget.utility.CouponInfo
+import pakutoma.iijmiocouponwidget.widget.updateSwitchStatus
 
 
 /**

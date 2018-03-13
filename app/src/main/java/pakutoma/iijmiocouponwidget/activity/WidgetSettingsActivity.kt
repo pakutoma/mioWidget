@@ -1,4 +1,4 @@
-package pakutoma.miowidget.activity
+package pakutoma.iijmiocouponwidget.activity
 
 import android.os.Bundle
 import android.preference.CheckBoxPreference
@@ -9,9 +9,9 @@ import android.view.MenuItem
 import org.jetbrains.anko.db.classParser
 import org.jetbrains.anko.db.parseList
 import org.jetbrains.anko.db.select
-import pakutoma.miowidget.R
-import pakutoma.miowidget.utility.CouponInfoFromDb
-import pakutoma.miowidget.utility.database
+import pakutoma.iijmiocouponwidget.R
+import pakutoma.iijmiocouponwidget.utility.CouponInfoFromDb
+import pakutoma.iijmiocouponwidget.utility.database
 
 /**
  * Created by PAKUTOMA on 2018/03/13.

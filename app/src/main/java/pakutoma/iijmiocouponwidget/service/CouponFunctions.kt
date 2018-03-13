@@ -1,4 +1,4 @@
-package pakutoma.miowidget.service
+package pakutoma.iijmiocouponwidget.service
 
 import android.content.Context
 import android.database.sqlite.SQLiteException
@@ -9,12 +9,12 @@ import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.withContext
 import org.jetbrains.anko.db.*
 import org.jetbrains.anko.defaultSharedPreferences
-import pakutoma.miowidget.R
-import pakutoma.miowidget.exception.NotFoundValidTokenException
-import pakutoma.miowidget.utility.CouponAPI
-import pakutoma.miowidget.utility.CouponInfo
-import pakutoma.miowidget.utility.database
-import pakutoma.miowidget.widget.updateSwitchStatus
+import pakutoma.iijmiocouponwidget.R
+import pakutoma.iijmiocouponwidget.exception.NotFoundValidTokenException
+import pakutoma.iijmiocouponwidget.utility.CouponAPI
+import pakutoma.iijmiocouponwidget.utility.CouponInfo
+import pakutoma.iijmiocouponwidget.utility.database
+import pakutoma.iijmiocouponwidget.widget.updateSwitchStatus
 
 /**
  * Created by PAKUTOMA on 2018/03/13.

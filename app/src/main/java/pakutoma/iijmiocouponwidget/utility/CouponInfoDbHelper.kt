@@ -1,4 +1,4 @@
-package pakutoma.miowidget.utility
+package pakutoma.iijmiocouponwidget.utility
 
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase

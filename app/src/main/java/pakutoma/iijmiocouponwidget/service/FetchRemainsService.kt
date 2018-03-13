@@ -1,4 +1,4 @@
-package pakutoma.miowidget.service
+package pakutoma.iijmiocouponwidget.service
 
 import android.annotation.TargetApi
 import android.app.Notification
@@ -11,12 +11,12 @@ import com.github.kittinunf.fuel.core.HttpException
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.withContext
-import pakutoma.miowidget.R
-import pakutoma.miowidget.exception.NotFoundValidTokenException
-import pakutoma.miowidget.utility.CouponAPI
-import pakutoma.miowidget.utility.CouponInfo
-import pakutoma.miowidget.widget.changeToFetchingMode
-import pakutoma.miowidget.widget.updateSwitchStatus
+import pakutoma.iijmiocouponwidget.R
+import pakutoma.iijmiocouponwidget.exception.NotFoundValidTokenException
+import pakutoma.iijmiocouponwidget.utility.CouponAPI
+import pakutoma.iijmiocouponwidget.utility.CouponInfo
+import pakutoma.iijmiocouponwidget.widget.changeToFetchingMode
+import pakutoma.iijmiocouponwidget.widget.updateSwitchStatus
 import java.io.IOException
 
 /**
