@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">iijmiocouponwidget</string>
+    <string name="app_name">mioWidget</string>
     <string name="appwidget_text">未取得</string>
     <string name="developerID">IilCI1xrAgqKrXV9Zt4</string>
     <string name="authUri"><![CDATA[https://api.iijmio.jp/mobile/d/v1/authorization/?response_type=token&client_id=IilCI1xrAgqKrXV9Zt4&state=example_state&redirect_uri=pakutoma.iijmiocouponwidget://callback]]></string>
