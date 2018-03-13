@@ -65,52 +65,12 @@ class SwitchCouponService : Service() {
             return START_NOT_STICKY
         }
 
-
-        changeToWaitMode(applicationContext, preferences.getBoolean("is_coupon_enable", false))
+        changeToWaitMode(applicationContext, preferences.getBoolean("is_coupon_enabled", false))
         launch {
-            val developerID = resources.getText(R.string.developerID).toString()
-            val editor = preferences.edit()
-            try {
-                val coupon = CouponAPI(developerID, accessToken)
-                val couponInfo = coupon.fetchCouponInfo()
-                val isCouponEnable = !couponInfo.planInfoList[0].lineInfoList[0].couponUse
-                val remains = couponInfo.planInfoList.sumBy { it.remains }
-                val serviceCodeList = couponInfo.planInfoList.flatMap { it.lineInfoList.map { it.serviceCode } }
-                coupon.changeCouponUse(isCouponEnable, serviceCodeList)
-                editor.putBoolean("is_coupon_enable", isCouponEnable)
-                withContext(UI) {
-                    sendToast(true, true, isCouponEnable)
-                    updateSwitchStatus(applicationContext, true, true, remains, isCouponEnable)
-                }
-            } catch (e: NotFoundValidTokenException) {
-                editor.putString("X-IIJmio-Authorization", "")
-                withContext(UI) {
-                    sendToast(false)
-                    updateSwitchStatus(applicationContext, false, false)
-                }
-            } catch (e: HttpException) {
-                withContext(UI) {
-                    sendToast(true,false)
-                    updateSwitchStatus(applicationContext, true, false)
-                }
-            }
-            editor.putLong("last_click_time", System.currentTimeMillis())
-            editor.apply()
+            switchCoupon(applicationContext)
             stopSelf()
         }
         return Service.START_NOT_STICKY
-    }
-
-    private fun sendToast(hasToken: Boolean, couldChange: Boolean = false, isCouponEnable: Boolean = false) {
-        if (!hasToken) {
-            Toast.makeText(applicationContext, "認証が行われていません。", Toast.LENGTH_SHORT).show()
-            return
-        }
-        if (!couldChange) {
-            Toast.makeText(applicationContext, "切り替えに失敗しました。", Toast.LENGTH_SHORT).show()
-        }
-        Toast.makeText(applicationContext, "クーポンを" + (if (isCouponEnable) "ON" else "OFF") + "に変更しました。", Toast.LENGTH_SHORT).show()
-
     }
 
     override fun onBind(intent: Intent): IBinder? {
