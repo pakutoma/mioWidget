@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+    <PreferenceScreen
+        android:summary="残量を表示するプラン・切り替えを行う回線を設定します。\n設定しない場合は、全プランの残量表示・全回線のスイッチ切り替えを行います。" />
+    <PreferenceCategory
+        android:title="@string/show_remains_plans"
+        android:key="show_remains_plans">
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:title="@string/switch_lines"
+        android:key="switch_lines">
+    </PreferenceCategory>
+</PreferenceScreen>

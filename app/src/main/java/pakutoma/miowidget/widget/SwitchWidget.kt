@@ -111,23 +111,23 @@ fun changeToFetchingMode(context: Context) {
     manager.updateAppWidget(thisWidget, remoteViews)
 }
 
-fun changeToWaitMode(context: Context, isCouponEnable: Boolean) {
+fun changeToWaitMode(context: Context, isCouponEnabled: Boolean) {
     val remoteViews = RemoteViews(context.packageName, R.layout.switch_widget)
     remoteViews.setViewVisibility(R.id.coupon_switch_top_on_end, View.INVISIBLE)
     remoteViews.setViewVisibility(R.id.coupon_switch_top_start, View.INVISIBLE)
-    remoteViews.setViewVisibility(R.id.coupon_switch_top_on_start, if (isCouponEnable) View.VISIBLE else View.INVISIBLE)
-    remoteViews.setViewVisibility(R.id.coupon_switch_top_end, if (isCouponEnable) View.INVISIBLE else View.VISIBLE)
+    remoteViews.setViewVisibility(R.id.coupon_switch_top_on_start, if (isCouponEnabled) View.VISIBLE else View.INVISIBLE)
+    remoteViews.setViewVisibility(R.id.coupon_switch_top_end, if (isCouponEnabled) View.INVISIBLE else View.VISIBLE)
     val thisWidget = ComponentName(context, SwitchWidget::class.java)
     val manager = AppWidgetManager.getInstance(context)
     manager.updateAppWidget(thisWidget, remoteViews)
 }
 
-fun updateSwitchStatus(context: Context, hasToken: Boolean, couldGet: Boolean, remains: Int = -1, isCouponEnable: Boolean = false) {
+fun updateSwitchStatus(context: Context, hasToken: Boolean, couldGet: Boolean, remains: Int = -1, isCouponEnabled: Boolean = false) {
     val remoteViews = RemoteViews(context.packageName, R.layout.switch_widget)
-    remoteViews.setViewVisibility(R.id.coupon_switch_base_on, if (isCouponEnable) View.VISIBLE else View.INVISIBLE)
-    remoteViews.setViewVisibility(R.id.coupon_switch_base, if (isCouponEnable) View.INVISIBLE else View.VISIBLE)
-    remoteViews.setViewVisibility(R.id.coupon_switch_top_on_end, if (isCouponEnable) View.VISIBLE else View.INVISIBLE)
-    remoteViews.setViewVisibility(R.id.coupon_switch_top_start, if (isCouponEnable) View.INVISIBLE else View.VISIBLE)
+    remoteViews.setViewVisibility(R.id.coupon_switch_base_on, if (isCouponEnabled) View.VISIBLE else View.INVISIBLE)
+    remoteViews.setViewVisibility(R.id.coupon_switch_base, if (isCouponEnabled) View.INVISIBLE else View.VISIBLE)
+    remoteViews.setViewVisibility(R.id.coupon_switch_top_on_end, if (isCouponEnabled) View.VISIBLE else View.INVISIBLE)
+    remoteViews.setViewVisibility(R.id.coupon_switch_top_start, if (isCouponEnabled) View.INVISIBLE else View.VISIBLE)
     remoteViews.setViewVisibility(R.id.coupon_switch_top_on_start, View.INVISIBLE)
     remoteViews.setViewVisibility(R.id.coupon_switch_top_end, View.INVISIBLE)
     if (!hasToken) {

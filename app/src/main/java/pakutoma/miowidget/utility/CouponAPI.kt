@@ -14,6 +14,7 @@ import pakutoma.miowidget.exception.UndefinedPlanException
 import kotlin.coroutines.experimental.suspendCoroutine
 
 /**
+ * iijmio coupon switch api wrapper
  * Created by PAKUTOMA on 2018/02/20.
  */
 
@@ -75,7 +76,7 @@ class CouponAPI constructor(developerID: String, accessToken: String) {
     }
 
     private fun packJsonClass(isOn: Boolean, serviceCodeList: List<String>): CouponDataToJson {
-        val typeList = serviceCodeList.groupBy { if (it.substring(0..2) == "hdo") "hdo" else "hda" }
+        val typeList = serviceCodeList.groupBy { if (it.substring(0..2) == "hdo") "hdo" else "hdu" }
         val hdoInfoToJsonList = typeList["hdo"]?.map { HdoInfoToJson(it, isOn) }
                 ?: ArrayList<HdoInfoToJson>()
         val hduInfoToJsonList = typeList["hdu"]?.map { HduInfoToJson(it, isOn) }

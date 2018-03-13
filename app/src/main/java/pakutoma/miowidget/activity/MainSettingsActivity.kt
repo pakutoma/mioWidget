@@ -1,10 +1,11 @@
 package pakutoma.miowidget.activity
 
-import android.preference.PreferenceFragment
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 
 import pakutoma.miowidget.R
+import android.preference.PreferenceFragment
+import android.support.v7.app.AppCompatActivity
+
 
 class MainSettingsActivity : AppCompatActivity() {
 
