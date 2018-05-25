@@ -6,6 +6,7 @@ import android.widget.Toast
 import com.github.kittinunf.fuel.core.HttpException
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.withContext
 import org.jetbrains.anko.db.*
 import org.jetbrains.anko.defaultSharedPreferences
@@ -47,7 +48,7 @@ private suspend fun accessCoupon(context: Context, change: Boolean) {
     } catch (e: NotFoundValidTokenException) {
         editor.putString("X-IIJmio-Authorization", "")
         showResult(context, change, false)
-    } catch (e: HttpException) {
+    } catch (e: Exception) {
         showResult(context, change, true, false)
     }
     if (change) {
@@ -65,7 +66,7 @@ private suspend fun showResult(context: Context, change: Boolean, hasToken: Bool
 
 private suspend fun fetchCouponInfo(context: Context, coupon: CouponAPI, change: Boolean): Triple<Boolean, Int, List<String>> {
     val couponInfo = coupon.fetchCouponInfo()
-    launch { updateDb(context, couponInfo) }
+    val db = async { updateDb(context, couponInfo) }
     val (enablePlans, enableLines) = getEnablePlansAndLines(context, couponInfo)
     val isCouponEnabledNow = if (enableLines.isEmpty()) {
         couponInfo.planInfoList[0].lineInfoList[0].couponUse
@@ -85,6 +86,7 @@ private suspend fun fetchCouponInfo(context: Context, coupon: CouponAPI, change:
             couponInfo.planInfoList.flatMap { it.lineInfoList.filter { x -> enableLines.any { it == x.number } }.map { it.serviceCode } }
         }
     }
+    db.await()
     return Triple(isCouponEnabled, remains, serviceCodeList)
 }
 
@@ -136,6 +138,7 @@ private fun sendToast(context: Context, hasToken: Boolean, couldChange: Boolean 
     }
     if (!couldChange) {
         Toast.makeText(context, "切り替えに失敗しました。", Toast.LENGTH_SHORT).show()
+        return
     }
     Toast.makeText(context, "クーポンを" + (if (isCouponEnabled) "ON" else "OFF") + "に変更しました。", Toast.LENGTH_SHORT).show()
 }
