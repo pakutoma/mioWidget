@@ -31,7 +31,6 @@ import java.util.concurrent.TimeUnit
 
 class SwitchWidget : AppWidgetProvider() {
     companion object {
-        private const val JOB_ID = 1
         private const val NOTIFICATION_CHANNEL_ID = "switch_service"
     }
 
@@ -60,7 +59,7 @@ class SwitchWidget : AppWidgetProvider() {
 
     override fun onDisabled(context: Context) {
         val jobScheduler = context.getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
-        jobScheduler.cancel(JOB_ID)
+        jobScheduler.cancel(context.resources.getInteger(R.integer.periodic_fetch_remains))
         super.onDisabled(context)
     }
 
@@ -82,8 +81,9 @@ class SwitchWidget : AppWidgetProvider() {
     private fun registerFetchRemainsJobService(context: Context) {
         val jobScheduler = context.getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
         val jobs = jobScheduler.allPendingJobs
-        if(jobs?.any { it.id == JOB_ID } != true) {
-            val jobInfo = JobInfo.Builder(JOB_ID, ComponentName(context, FetchRemainsJobService::class.java))
+        val jobId = context.resources.getInteger(R.integer.periodic_fetch_remains)
+        if(jobs?.any { it.id == jobId } != true) {
+            val jobInfo = JobInfo.Builder(jobId, ComponentName(context, FetchRemainsJobService::class.java))
                     .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
                     .setPeriodic(TimeUnit.MINUTES.toMillis(15))
                     .setPersisted(true)
@@ -138,11 +138,10 @@ fun updateSwitchStatus(context: Context, hasToken: Boolean, couldGet: Boolean, r
         remoteViews.setTextViewText(R.id.data_traffic, convertPrefixString(remains))
     }
     val clickIntent = Intent(context, SwitchCouponService::class.java)
-    val pendingIntent: PendingIntent
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        pendingIntent = PendingIntent.getForegroundService(context, 0, clickIntent, FLAG_CANCEL_CURRENT)
+    val pendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        PendingIntent.getForegroundService(context, 0, clickIntent, FLAG_CANCEL_CURRENT)
     } else {
-        pendingIntent = PendingIntent.getService(context, 0, clickIntent, FLAG_CANCEL_CURRENT)
+        PendingIntent.getService(context, 0, clickIntent, FLAG_CANCEL_CURRENT)
     }
     remoteViews.setOnClickPendingIntent(R.id.transparent_button, pendingIntent)
     val thisWidget = ComponentName(context, SwitchWidget::class.java)
@@ -161,11 +160,10 @@ private fun convertPrefixString(traffic: Int): String {
 fun setSwitchPendingIntent(context: Context) {
     val remoteViews = RemoteViews(context.packageName, R.layout.switch_widget)
     val clickIntent = Intent(context, SwitchCouponService::class.java)
-    val pendingIntent: PendingIntent
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        pendingIntent = PendingIntent.getForegroundService(context, 0, clickIntent, FLAG_CANCEL_CURRENT)
+    val pendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        PendingIntent.getForegroundService(context, 0, clickIntent, FLAG_CANCEL_CURRENT)
     } else {
-        pendingIntent = PendingIntent.getService(context, 0, clickIntent, FLAG_CANCEL_CURRENT)
+        PendingIntent.getService(context, 0, clickIntent, FLAG_CANCEL_CURRENT)
     }
     remoteViews.setOnClickPendingIntent(R.id.transparent_button, pendingIntent)
     val thisWidget = ComponentName(context, SwitchWidget::class.java)
