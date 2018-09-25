@@ -12,14 +12,6 @@
             android:targetClass="pakutoma.iijmiocouponwidget.activity.WidgetSettingsActivity"
             android:targetPackage="pakutoma.iijmiocouponwidget" />
     </Preference>
-    <Preference
-        android:key="advanced_settings"
-        android:title="@string/advanced_settings">
-        <intent
-            android:action="android.intent.action.MAIN"
-            android:targetClass="pakutoma.iijmiocouponwidget.activity.AdvancedSettingsActivity"
-            android:targetPackage="pakutoma.iijmiocouponwidget" />
-    </Preference>
     <pakutoma.iijmiocouponwidget.activity.AboutDialog android:title="このアプリについて" />
     <pakutoma.iijmiocouponwidget.activity.LicenseDialog android:title="オープンソースライセンス" />
 </PreferenceScreen>

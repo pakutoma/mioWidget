@@ -66,7 +66,7 @@ class CouponAPI constructor(developerID: String, accessToken: String) {
         "/coupon/".httpPut()
                 .header("Content-Type" to "application/json")
                 .body(json)
-                .responseObject<ReturnCodeFromJson> { req, response, result ->
+                .responseObject<ReturnCodeFromJson> { _, response, result ->
                     when (result) {
                         is Result.Failure -> {
                             if(response.statusCode == 403) {
