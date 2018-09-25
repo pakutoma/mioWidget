@@ -3,7 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/mioWidget.iml" filepath="$PROJECT_DIR$/mioWidget.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/mioWidget.iml" filepath="$PROJECT_DIR$/.idea/mioWidget.iml" />
     </modules>
   </component>
 </project>

@@ -1,6 +1,9 @@
 package pakutoma.iijmiocouponwidget.utility
 
+import android.util.Log
+import android.widget.Toast
 import com.github.kittinunf.fuel.core.FuelManager
+import com.github.kittinunf.fuel.core.interceptors.validatorResponseInterceptor
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.httpPut
 import com.github.kittinunf.fuel.moshi.responseObject
@@ -8,6 +11,7 @@ import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.getAs
 import com.squareup.moshi.Moshi
 import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.withContext
 import pakutoma.iijmiocouponwidget.exception.NotFoundValidTokenException
 import pakutoma.iijmiocouponwidget.exception.UndefinedPlanException
@@ -35,11 +39,10 @@ class CouponAPI constructor(developerID: String, accessToken: String) {
 
     private suspend fun sendHttpGetCouponInfo(): CouponDataFromJson = suspendCoroutine { cont ->
         "/coupon/".httpGet()
-                .responseObject<CouponDataFromJson> { _, _, result ->
+                .responseObject<CouponDataFromJson> { _, response, result ->
                     when (result) {
                         is Result.Failure -> {
-                            val (data, _) = result
-                            if (data?.returnCode?.contains("User Authorization Failure") == true) {
+                            if(response.statusCode == 403) {
                                 cont.resumeWithException(NotFoundValidTokenException("User Authorization Failure"))
                             }
                             cont.resumeWithException(result.getAs()!!)
@@ -63,9 +66,12 @@ class CouponAPI constructor(developerID: String, accessToken: String) {
         "/coupon/".httpPut()
                 .header("Content-Type" to "application/json")
                 .body(json)
-                .responseObject<ReturnCodeFromJson> { _, _, result ->
+                .responseObject<ReturnCodeFromJson> { req, response, result ->
                     when (result) {
                         is Result.Failure -> {
+                            if(response.statusCode == 403) {
+                                cont.resumeWithException(NotFoundValidTokenException("User Authorization Failure"))
+                            }
                             cont.resumeWithException(result.getAs()!!)
                         }
                         is Result.Success -> {
