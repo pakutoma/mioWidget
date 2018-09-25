@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:title="@string/retry_settings"
+        android:key="retry_settings">
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="retry_failed"
+            android:title="@string/retry_failed"/>
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="retry_api_limit"
+            android:title="@string/retry_api_limit" />
+    </PreferenceCategory>
+</PreferenceScreen>
