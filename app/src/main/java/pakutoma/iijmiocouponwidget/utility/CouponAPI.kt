@@ -1,21 +1,20 @@
 package pakutoma.iijmiocouponwidget.utility
 
-import android.util.Log
-import android.widget.Toast
 import com.github.kittinunf.fuel.core.FuelManager
-import com.github.kittinunf.fuel.core.interceptors.validatorResponseInterceptor
+import com.github.kittinunf.fuel.core.extensions.jsonBody
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.httpPut
 import com.github.kittinunf.fuel.moshi.responseObject
 import com.github.kittinunf.result.Result
 import com.github.kittinunf.result.getAs
 import com.squareup.moshi.Moshi
-import kotlinx.coroutines.experimental.CommonPool
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.withContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import pakutoma.iijmiocouponwidget.exception.NotFoundValidTokenException
 import pakutoma.iijmiocouponwidget.exception.UndefinedPlanException
-import kotlin.coroutines.experimental.suspendCoroutine
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
 
 /**
  * iijmio coupon switch api wrapper
@@ -33,7 +32,7 @@ class CouponAPI constructor(developerID: String, accessToken: String) {
     }
 
     suspend fun fetchCouponInfo(): CouponInfo {
-        val fetchedData = withContext(CommonPool) { sendHttpGetCouponInfo() }
+        val fetchedData = withContext(Dispatchers.Default) { sendHttpGetCouponInfo() }
         return convert(fetchedData)
     }
 
@@ -42,7 +41,7 @@ class CouponAPI constructor(developerID: String, accessToken: String) {
                 .responseObject<CouponDataFromJson> { _, response, result ->
                     when (result) {
                         is Result.Failure -> {
-                            if(response.statusCode == 403) {
+                            if (response.statusCode == 403) {
                                 cont.resumeWithException(NotFoundValidTokenException("User Authorization Failure"))
                             }
                             cont.resumeWithException(result.getAs()!!)
@@ -59,17 +58,16 @@ class CouponAPI constructor(developerID: String, accessToken: String) {
         val moshi = Moshi.Builder().build()
         val adapter = moshi.adapter(CouponDataToJson::class.java)
         val json = adapter.toJson(couponDataToJson)
-        return withContext(CommonPool) { sendHttpPutCouponStatus(json) }
+        return withContext(Dispatchers.Default) { sendHttpPutCouponStatus(json) }
     }
 
     private suspend fun sendHttpPutCouponStatus(json: String): ReturnCodeFromJson = suspendCoroutine { cont ->
         "/coupon/".httpPut()
-                .header("Content-Type" to "application/json")
-                .body(json)
+                .jsonBody(json)
                 .responseObject<ReturnCodeFromJson> { _, response, result ->
                     when (result) {
                         is Result.Failure -> {
-                            if(response.statusCode == 403) {
+                            if (response.statusCode == 403) {
                                 cont.resumeWithException(NotFoundValidTokenException("User Authorization Failure"))
                             }
                             cont.resumeWithException(result.getAs()!!)

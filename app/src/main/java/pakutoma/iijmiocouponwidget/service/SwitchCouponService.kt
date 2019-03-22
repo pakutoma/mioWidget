@@ -11,17 +11,14 @@ import android.net.Network
 import android.net.NetworkRequest
 import android.os.IBinder
 import android.widget.Toast
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.launch
-import kotlinx.coroutines.experimental.withContext
 import pakutoma.iijmiocouponwidget.R
 import pakutoma.iijmiocouponwidget.activity.OpenBrowserActivity
 import pakutoma.iijmiocouponwidget.widget.changeToWaitMode
 import pakutoma.iijmiocouponwidget.widget.setSwitchPendingIntent
 import android.os.Build
-import kotlinx.coroutines.experimental.delay
-import kotlinx.coroutines.experimental.withTimeoutOrNull
-import kotlin.coroutines.experimental.suspendCoroutine
+import kotlinx.coroutines.*
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 
 /**
@@ -84,10 +81,10 @@ class SwitchCouponService : Service() {
 
         val cm = applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val networkRequest = NetworkRequest.Builder().build()
-        launch {
+        GlobalScope.launch {
             if (timeFromFinish < 1000 * 60) {
                 val remainingTime = 1000 * 60 - timeFromFinish
-                withContext(UI) {
+                withContext(Dispatchers.Main) {
                     Toast.makeText(applicationContext, "API limit: " + java.lang.Long.toString(remainingTime / 1000) + "秒後に切替を行います", Toast.LENGTH_SHORT).show()
                 }
                 delay(1000 * 60 - timeFromFinish)
