@@ -1,13 +1,8 @@
 package pakutoma.iijmiocouponwidget.service
 
 import android.content.Context
-import android.database.sqlite.SQLiteException
 import android.widget.Toast
-import com.github.kittinunf.fuel.core.HttpException
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.launch
-import kotlinx.coroutines.experimental.async
-import kotlinx.coroutines.experimental.withContext
+import kotlinx.coroutines.*
 import org.jetbrains.anko.db.*
 import org.jetbrains.anko.defaultSharedPreferences
 import pakutoma.iijmiocouponwidget.R
@@ -57,7 +52,7 @@ private suspend fun accessCoupon(context: Context, change: Boolean) {
     editor.apply()
 }
 
-private suspend fun showResult(context: Context, change: Boolean, hasToken: Boolean, couldGet: Boolean = false, remains: Int = -1, isCouponEnabled: Boolean = false) = withContext(UI) {
+private suspend fun showResult(context: Context, change: Boolean, hasToken: Boolean, couldGet: Boolean = false, remains: Int = -1, isCouponEnabled: Boolean = false) = withContext(Dispatchers.Main) {
     if (change) {
         sendToast(context, hasToken, couldGet, isCouponEnabled)
     }
@@ -66,7 +61,7 @@ private suspend fun showResult(context: Context, change: Boolean, hasToken: Bool
 
 private suspend fun fetchCouponInfo(context: Context, coupon: CouponAPI, change: Boolean): Triple<Boolean, Int, List<String>> {
     val couponInfo = coupon.fetchCouponInfo()
-    val db = async { updateDb(context, couponInfo) }
+    val db = GlobalScope.async { updateDb(context, couponInfo) }
     val (enablePlans, enableLines) = getEnablePlansAndLines(context, couponInfo)
     val isCouponEnabledNow = if (enableLines.isEmpty()) {
         couponInfo.planInfoList[0].lineInfoList[0].couponUse
