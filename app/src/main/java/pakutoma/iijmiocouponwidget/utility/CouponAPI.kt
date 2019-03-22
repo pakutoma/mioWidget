@@ -1,7 +1,7 @@
 package pakutoma.iijmiocouponwidget.utility
 
 import com.github.kittinunf.fuel.core.FuelManager
-import com.github.kittinunf.fuel.core.interceptors.validatorResponseInterceptor
+import com.github.kittinunf.fuel.core.extensions.jsonBody
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.httpPut
 import com.github.kittinunf.fuel.moshi.responseObject
@@ -63,8 +63,7 @@ class CouponAPI constructor(developerID: String, accessToken: String) {
 
     private suspend fun sendHttpPutCouponStatus(json: String): ReturnCodeFromJson = suspendCoroutine { cont ->
         "/coupon/".httpPut()
-                .header("Content-Type" to "application/json")
-                .body(json)
+                .jsonBody(json)
                 .responseObject<ReturnCodeFromJson> { _, response, result ->
                     when (result) {
                         is Result.Failure -> {
