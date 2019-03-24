@@ -27,7 +27,9 @@ class FetchRemainsService : Service() {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val notification = Notification
                     .Builder(applicationContext, "switch_service")
-                    .setContentTitle(applicationContext.getString(R.string.switch_notification))
+                    .setSmallIcon(R.drawable.ic_notification)
+                    .setContentTitle(applicationContext.getString(R.string.notification_title))
+                    .setContentText(applicationContext.getString(R.string.fetch_remains_notification_text))
                     .build()
             startForeground(FETCH_REMAINS_NOTIFICATION_ID, notification)
         }
