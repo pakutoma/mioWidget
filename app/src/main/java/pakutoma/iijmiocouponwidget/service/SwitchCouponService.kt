@@ -2,6 +2,7 @@ package pakutoma.iijmiocouponwidget.service
 
 import android.annotation.TargetApi
 import android.app.Notification
+import android.app.NotificationManager
 import android.app.Service
 import android.content.Context
 import android.content.Intent
@@ -29,22 +30,15 @@ class SwitchCouponService : Service() {
 
     companion object {
         private const val SWITCH_COUPON_NOTIFICATION_ID = 1
+        private var builder: Notification.Builder? = null
     }
 
     override fun onCreate() {
         super.onCreate()
-        @TargetApi(Build.VERSION_CODES.O)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val notification = Notification
-                    .Builder(applicationContext, "switch_service")
-                    .setContentTitle(applicationContext.getString(R.string.switch_notification))
-                    .build()
-            startForeground(SWITCH_COUPON_NOTIFICATION_ID, notification)
-        }
+        builder = notifyInitialNotification()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-
         val preferences = getSharedPreferences("iijmio_token", Context.MODE_PRIVATE);
         if (preferences == null) {
             stopSelf()
@@ -78,6 +72,7 @@ class SwitchCouponService : Service() {
         }
 
         changeToWaitMode(applicationContext, preferences.getBoolean("is_coupon_enabled", false))
+        updateNotification(builder, applicationContext.getString(R.string.switch_coupon_notification_text))
 
         val cm = applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val networkRequest = NetworkRequest.Builder().build()
@@ -87,6 +82,7 @@ class SwitchCouponService : Service() {
                 withContext(Dispatchers.Main) {
                     Toast.makeText(applicationContext, "API limit: " + java.lang.Long.toString(remainingTime / 1000) + "秒後に切替を行います", Toast.LENGTH_SHORT).show()
                 }
+                updateNotification(builder, applicationContext.getString(R.string.switch_coupon_notification_wait_text))
                 delay(1000 * 60 - timeFromFinish)
             }
             val network = withTimeoutOrNull(1000 * 60) {
@@ -123,4 +119,29 @@ class SwitchCouponService : Service() {
         cm.registerNetworkCallback(networkRequest, callback)
     }
 
+    private fun notifyInitialNotification(): Notification.Builder? {
+        @TargetApi(Build.VERSION_CODES.O)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val builder = Notification.Builder(applicationContext, "switch_service")
+            builder.setSmallIcon(R.drawable.ic_notification)
+                    .setContentTitle(applicationContext.getString(R.string.notification_title))
+                    .setContentText(applicationContext.getString(R.string.notification_text))
+            startForeground(SwitchCouponService.SWITCH_COUPON_NOTIFICATION_ID, builder.build())
+            return builder
+        } else {
+            return null
+        }
+    }
+
+    private fun updateNotification(builder: Notification.Builder?, text: String) {
+        @TargetApi(Build.VERSION_CODES.O)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && builder != null) {
+            val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            builder.setContentText(text)
+            notificationManager.notify(SWITCH_COUPON_NOTIFICATION_ID, builder.build())
+        }
+    }
+
 }
+
+
