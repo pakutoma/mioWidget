@@ -1,8 +1,6 @@
 package pakutoma.iijmiocouponwidget.utility
 
-import kotlinx.coroutines.experimental.async
-import kotlinx.coroutines.experimental.launch
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.runBlocking
 import org.junit.Test
 
 import org.junit.Assert.*
@@ -11,7 +9,7 @@ import org.junit.Assert.*
  * Created by PAKUTOMA on 2018/02/21.
  */
 class CouponAPITest {
-    private val accessToken = "Pns2pgN62W6po8wv23v2YHzW87E0kPn1519200200"
+    private val accessToken = "HfXcx3zYSrG3ukkQtZjsQATkqX191aw1553251721"
     private val developerID = "IilCI1xrAgqKrXV9Zt4"
     @Test
     fun fetchCouponInfo() {

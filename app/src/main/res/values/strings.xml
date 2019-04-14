@@ -4,9 +4,17 @@
     <string name="developerID">IilCI1xrAgqKrXV9Zt4</string>
     <string name="authUri"><![CDATA[https://api.iijmio.jp/mobile/d/v1/authorization/?response_type=token&client_id=IilCI1xrAgqKrXV9Zt4&state=example_state&redirect_uri=pakutoma.iijmiocouponwidget://callback]]></string>
     <string name="switch_service">クーポン切り替え・通信量取得</string>
-    <string name="switch_notification">通信中</string>
-    <string name="widget_settings">残量表示・スイッチの設定</string>
+    <string name="notification_title">mioWidget</string>
+    <string name="notification_text">通信しています</string>
+    <string name="fetch_remains_notification_text">クーポン残量を取得しています</string>
+    <string name="switch_coupon_notification_text">クーポンを切り替えています</string>
+    <string name="switch_coupon_notification_wait_text">クーポン切り替えを待機しています</string>
+    <string name="widget_settings">切替回線・表示プランの設定</string>
+    <string name="advanced_settings">詳細設定</string>
     <string name="show_remains_plans">残量を表示するプラン</string>
     <string name="switch_lines">切り替えを行う回線</string>
     <string name="regulation">通信規制中</string>
+    <string name="retry_settings">クーポン切り替えのリトライ</string>
+    <string name="retry_failed">通信失敗時にリトライを行う</string>
+    <string name="retry_api_limit">APIリミット時にリトライを行う</string>
 </resources>

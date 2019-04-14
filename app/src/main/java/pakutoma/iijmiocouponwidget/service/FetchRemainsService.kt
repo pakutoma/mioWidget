@@ -3,21 +3,13 @@ package pakutoma.iijmiocouponwidget.service
 import android.annotation.TargetApi
 import android.app.Notification
 import android.app.Service
-import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.IBinder
-import com.github.kittinunf.fuel.core.HttpException
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.launch
-import kotlinx.coroutines.experimental.withContext
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import pakutoma.iijmiocouponwidget.R
-import pakutoma.iijmiocouponwidget.exception.NotFoundValidTokenException
-import pakutoma.iijmiocouponwidget.utility.CouponAPI
-import pakutoma.iijmiocouponwidget.utility.CouponInfo
 import pakutoma.iijmiocouponwidget.widget.changeToFetchingMode
-import pakutoma.iijmiocouponwidget.widget.updateSwitchStatus
-import java.io.IOException
 
 /**
  * Created by PAKUTOMA on 2018/03/06.
@@ -35,7 +27,9 @@ class FetchRemainsService : Service() {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val notification = Notification
                     .Builder(applicationContext, "switch_service")
-                    .setContentTitle(applicationContext.getString(R.string.switch_notification))
+                    .setSmallIcon(R.drawable.ic_notification)
+                    .setContentTitle(applicationContext.getString(R.string.notification_title))
+                    .setContentText(applicationContext.getString(R.string.fetch_remains_notification_text))
                     .build()
             startForeground(FETCH_REMAINS_NOTIFICATION_ID, notification)
         }
@@ -43,7 +37,7 @@ class FetchRemainsService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         changeToFetchingMode(applicationContext)
-        launch {
+        GlobalScope.launch {
             fetchRemains(applicationContext)
             stopSelf()
         }
