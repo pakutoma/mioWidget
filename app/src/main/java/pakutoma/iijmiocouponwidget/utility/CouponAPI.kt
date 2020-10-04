@@ -94,7 +94,7 @@ class CouponAPI constructor(developerID: String, accessToken: String) {
             when (it.plan) {
                 "Family Share", "Minimum Start", "Light Start"
                 -> convertNormalData(it)
-                "Eco Minimum", "Eco Standard"
+                "Eco Minimum", "Eco Standard", "Pay as you go"
                 -> convertEcoData(it)
                 else
                 -> throw UndefinedPlanException("Undefined plan name")

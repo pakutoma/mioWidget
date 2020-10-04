@@ -2,8 +2,10 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/StudioProjects-mioWidget.iml" filepath="$PROJECT_DIR$/StudioProjects-mioWidget.iml" group="mioWidget" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/mioWidget.iml" filepath="$PROJECT_DIR$/.idea/mioWidget.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/mioWidget-app.iml" filepath="$PROJECT_DIR$/app/mioWidget-app.iml" group="mioWidget/app" />
     </modules>
   </component>
 </project>
