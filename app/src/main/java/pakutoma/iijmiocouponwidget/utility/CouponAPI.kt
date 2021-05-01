@@ -96,6 +96,8 @@ class CouponAPI constructor(developerID: String, accessToken: String) {
                 -> convertNormalData(it)
                 "Eco Minimum", "Eco Standard", "Pay as you go"
                 -> convertEcoData(it)
+                null // TODO: remove null if api returns "giga plan"
+                -> convertNormalData(it)
                 else
                 -> throw UndefinedPlanException("Undefined plan name")
             }
@@ -104,7 +106,7 @@ class CouponAPI constructor(developerID: String, accessToken: String) {
 
     private fun convertNormalData(normalInfo: CouponInfoFromJson): PlanInfo {
         val serviceCode = normalInfo.hddServiceCode
-        val plan = normalInfo.plan
+        val plan = normalInfo.plan ?: "unknown plan"
         val lineInfoList = ArrayList<LineInfo>()
         lineInfoList.addAll(normalInfo.hdoInfo?.map {
             LineInfo(
@@ -133,7 +135,7 @@ class CouponAPI constructor(developerID: String, accessToken: String) {
 
     private fun convertEcoData(ecoInfo: CouponInfoFromJson): PlanInfo {
         val serviceCode = ecoInfo.hddServiceCode
-        val plan = ecoInfo.plan
+        val plan = ecoInfo.plan ?: "unknown plan"
         val remains = ecoInfo.remains!!
         val lineInfoList = ArrayList<LineInfo>()
         lineInfoList.addAll(ecoInfo.hduInfo?.map {
