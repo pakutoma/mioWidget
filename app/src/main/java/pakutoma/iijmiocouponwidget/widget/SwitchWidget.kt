@@ -37,23 +37,25 @@ class SwitchWidget : AppWidgetProvider() {
     override fun onReceive(context: Context, intent: Intent) {
         super.onReceive(context, intent)
         if (intent.action == Intent.ACTION_BOOT_COMPLETED) {
+            registerNotificationChannel(context)
             startFetchRemainsService(context)
         }
         if(intent.action == Intent.ACTION_MY_PACKAGE_REPLACED) {
-            registerFetchRemainsJobService(context)
             registerNotificationChannel(context)
+            registerFetchRemainsJobService(context)
             startFetchRemainsService(context)
         }
     }
 
     override fun onEnabled(context: Context) {
         super.onEnabled(context)
-        registerFetchRemainsJobService(context)
         registerNotificationChannel(context)
+        registerFetchRemainsJobService(context)
     }
 
     override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
         super.onUpdate(context, appWidgetManager, appWidgetIds)
+        registerNotificationChannel(context)
         startFetchRemainsService(context)
     }
 
@@ -71,7 +73,7 @@ class SwitchWidget : AppWidgetProvider() {
                 val channel = NotificationChannel(
                         NOTIFICATION_CHANNEL_ID,
                         context.getString(R.string.switch_service),
-                        NotificationManager.IMPORTANCE_MIN
+                        NotificationManager.IMPORTANCE_LOW
                 )
                 manager.createNotificationChannel(channel)
             }
