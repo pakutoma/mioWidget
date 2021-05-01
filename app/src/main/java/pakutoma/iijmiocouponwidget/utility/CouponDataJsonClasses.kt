@@ -12,7 +12,7 @@ data class CouponDataFromJson(
 
 data class CouponInfoFromJson(
         val hddServiceCode: String,
-        val plan: String,
+        val plan: String?,
         val hdoInfo: List<HdoInfoFromJson>?,
         val hduInfo: List<HduInfoFromJson>?,
         val coupon: List<CouponFromJson>?,

@@ -7,8 +7,8 @@ android {
     defaultConfig {
         applicationId "pakutoma.iijmiocouponwidget"
         minSdkVersion 21
-        versionCode 7
-        versionName "2.3"
+        versionCode 8
+        versionName "2.3 Hotfix 1"
         targetSdkVersion 30
     }
     buildTypes {
